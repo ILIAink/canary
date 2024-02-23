@@ -10,7 +10,13 @@ def home(request):
 def login(request):
     return render(request, 'login.html')
 
-# dashboard view - a simple dashboard page
-# TODO implement this
+# dashboard view - displays the user's dashboard
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    if request.user.is_authenticated:
+        if request.user.is_staff:  # Check if the user is an administrator
+            return render(request, 'dashboard/dashboard_admin.html')
+        else:
+            return render(request, 'dashboard/dashboard_user.html')
+    else:
+        # Handle the case when the user is not authenticated, perhaps redirect to login page
+        return render(request, 'account/login.html')

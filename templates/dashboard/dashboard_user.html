@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>User Dashboard</h2>
+    <p>Welcome to Canary, simple regular user.</p>
+    <p>Here is your dashboard.</p>
+    <p>Your name: {{ user.username }}</p>
+    <p>Your email: {{user.email }}</p>
+{% endblock %}

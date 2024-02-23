@@ -12,7 +12,7 @@
     </head>
     <header>
         <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-            <a class="navbar-brand" href="{% url 'canary:home' %}">Canary</a>
+            <a class="navbar-brand" href="{% url 'canary:dashboard' %}">Canary</a>
             <ul class="navbar-nav mr-auto"></ul> <!-- This is to push the login and sign up links to the right -->
             <ul class="navbar-nav">
                 {% if user.is_authenticated %}
