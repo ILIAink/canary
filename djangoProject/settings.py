@@ -98,7 +98,7 @@ MIDDLEWARE = [
 
     'allauth.account.middleware.AccountMiddleware',
 
-    'whitenoise.middleware.whiteNoiseMiddleware'
+    'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
 
 ROOT_URLCONF = 'djangoProject.urls'

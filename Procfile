@@ -1,1 +1,1 @@
-web: gunicorn canary.wsgi
+web: gunicorn djangoProject.wsgi
