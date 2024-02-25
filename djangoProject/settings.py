@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 import secrets
 
 import dj_database_url
@@ -25,10 +26,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", default=secrets.token_urlsafe(nbytes=64))
+IS_HEROKU_APP = "DYNO" in os.environ and not "CI" in os.environ
+if not IS_HEROKU_APP:
+    load_dotenv()
+
+
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY", default=secrets.token_urlsafe(nbytes=64))
 
 # heroku config
-IS_HEROKU_APP = "DYNO" in os.environ and not "CI" in os.environ
 
 
 if not IS_HEROKU_APP:
@@ -56,12 +62,12 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 ]
 
-SOCIALACCOUNT_LOGIN_ON_GET=True
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
 AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
-    ]
+]
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACOUNT_USERNAME_REQUIRED = False
@@ -106,8 +112,7 @@ ROOT_URLCONF = 'djangoProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
