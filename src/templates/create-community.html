@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container mt-5">
+        <form method="post" action="{% url 'canary:save_community' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="name" class="form-label">Community Name:</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label"> Community Password:</label>
+                <input type="text" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Community</button>
+        </form>
+    </div>
+{% endblock %}
