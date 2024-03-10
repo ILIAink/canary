@@ -27,3 +27,6 @@ def save_community(request):
 
     # Save the report to the database
     community.save()
+
+    return HttpResponseRedirect(reverse("admin_community_home", args=community.name))
+
