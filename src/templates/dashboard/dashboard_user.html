@@ -7,4 +7,10 @@
     <p>Your name: {{ user.first_name }} {{ user.last_name }}</p>
     <p>Your username: {{ user.username }}</p>
     <p>Your email: {{user.email }}</p>
+    <div class="container mt-5">
+        <form method="post" action="{% url 'communities:create_community' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Create Community</button>
+        </form>
+    </div>
 {% endblock %}
