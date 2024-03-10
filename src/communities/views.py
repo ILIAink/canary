@@ -1,5 +1,9 @@
 from django.shortcuts import render
 
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from .models import Community
+from django.urls import reverse
 
 # Create your views here.
 
