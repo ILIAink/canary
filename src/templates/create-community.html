@@ -2,7 +2,7 @@
 
 {% block content %}
     <div class="container mt-5">
-        <form method="post" action="{% url 'canary:save_community' %}">
+        <form method="post" action="{% url 'communities:save_community' %}">
             {% csrf_token %}
             <div class="mb-3">
                 <label for="name" class="form-label">Community Name:</label>
@@ -11,6 +11,10 @@
             <div class="mb-3">
                 <label for="password" class="form-label"> Community Password:</label>
                 <input type="text" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label"> Community Description:</label>
+                <input type="text" class="form-control" id="description" name="description" required>
             </div>
             <button type="submit" class="btn btn-primary">Submit Community</button>
         </form>
