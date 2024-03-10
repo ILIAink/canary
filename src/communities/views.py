@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from .models import Community
+from .models import Community, CommunityMember
 from django.urls import reverse
 
 # Create your views here.
@@ -23,10 +23,14 @@ def save_community(request):
     password = request.POST.get('password')
     admin = request.user
 
-    community = Community(community_name=name, password=password, admin=admin)
+    community = Community(name=name, password=password)
 
     # Save the report to the database
     community.save()
+
+    adminmember = CommunityMember(community=community, admin=1, member=admin)
+
+    adminmember.save()
 
     return HttpResponseRedirect(reverse("admin_community_home", args=community.name))
 
