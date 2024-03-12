@@ -12,8 +12,8 @@ class User(AbstractUser):
     # USERNAME_FIELD = 'email'
 
     # all fields that will be prompted when creating a user
-    date_of_birth = models.DateField(blank=True, null=True)
-    REQUIRED_FIELDS = ['username', 'email', 'first_name', 'last_name']
+    #date_of_birth = models.DateField(blank=True, null=True)
+    #REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
 
     def __str__(self):
         if self.first_name and self.last_name:

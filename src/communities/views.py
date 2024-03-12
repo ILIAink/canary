@@ -9,7 +9,7 @@ from django.urls import reverse
 
 def create_community(request):
     # TODO connect to the community creation form
-    return render(request, 'create_community.html')
+    return render(request, 'community/create_community.html')
 
 
 # Admin home view - displays the home view for the admin of a community
