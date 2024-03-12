@@ -60,6 +60,10 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'communities.apps.CommunitiesConfig',
+    'reports.apps.ReportsConfig',
+    'accounts.apps.AccountsConfig',
+
 ]
 
 SOCIALACCOUNT_LOGIN_ON_GET=True
@@ -154,6 +158,8 @@ else:
         }
     }
 
+# --- AUTHENTICATION ---
+AUTH_USER_MODEL = 'accounts.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators

@@ -2,9 +2,11 @@ from django.db import models
 
 # Create your models here.
 
+
 # main community model
 class Community(models.Model):
     name = models.CharField(max_length=100)
+    password = models.CharField(max_length=10)
 
     description = models.TextField()
 
@@ -14,7 +16,6 @@ class Community(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
 
     def __str__(self):
         return self.name
