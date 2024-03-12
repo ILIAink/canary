@@ -8,6 +8,7 @@ from django.urls import reverse
 # Create your views here.
 
 def create_community(request):
+    # TODO connect to the community creation form
     return render(request, 'create_community.html')
 
 
