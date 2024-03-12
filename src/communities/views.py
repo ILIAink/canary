@@ -3,7 +3,6 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from accounts.models import User
 from .models import Community, CommunityMember
 from django.urls import reverse
 
