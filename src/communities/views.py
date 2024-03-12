@@ -1,7 +1,9 @@
 from django.shortcuts import render
 
 from django.http import HttpResponseRedirect
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from accounts.models import User
 from .models import Community, CommunityMember
 from django.urls import reverse
 
@@ -23,16 +25,16 @@ def save_community(request):
     name = request.POST.get('name')
     password = request.POST.get('password')
     description = request.POST.get('description')
-    admin = request.user
-
     community = Community(name=name, password=password, description=description)
+
+
 
     # Save the report to the database
     community.save()
 
-    admin_member = CommunityMember(community=community, admin=1, member=admin)
+    admin_member = CommunityMember(community=community, is_admin=1, member=request.user)
 
     admin_member.save()
 
-    return HttpResponseRedirect(reverse("admin_community_home", args=community.name))
+    return HttpResponseRedirect("admin_community_home")
 

@@ -16,6 +16,8 @@
                 <label for="description" class="form-label"> Community Description:</label>
                 <input type="text" class="form-control" id="description" name="description" required>
             </div>
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+
             <button type="submit" class="btn btn-primary">Submit Community</button>
         </form>
     </div>
