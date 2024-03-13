@@ -17,7 +17,11 @@ def create_community(request):
 def admin_community_home(request):
     return render(request, 'dashboard/dashboard_community_admin.html')
 
+def join_a_community(request):
+    return render(request, 'community/join_a_community.html')
 
+def join_community_error(request):
+    return render(request, 'community/join_community_error.html')
 # def for saving a community after creation
 def save_community(request):
 
@@ -37,3 +41,6 @@ def save_community(request):
 
     return HttpResponseRedirect("admin_community_home")
 
+def join_community(request):
+    #see if community is valid, if is, see if password is valid, if is make relation, if not error page
+    return HttpResponseRedirect("join_success")
