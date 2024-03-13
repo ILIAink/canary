@@ -10,9 +10,8 @@ class Community(models.Model):
 
     description = models.TextField()
 
-    # each community stores a list of foreign keys to reports submitted
-    # each report is only stored in one community
-    reports = models.ManyToManyField('reports.Report', blank=True)
+    # each community stores a list of reports submitted to that community
+    reports = models.ManyToManyField('Report')
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -32,3 +31,43 @@ class CommunityMember(models.Model):
 
     def __str__(self):
         return f'{self.member} in {self.community}'
+
+# --- REPORT MODELS ----
+
+# report model
+class Report(models.Model):
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+
+    # the author user is optional (for anonymous reports)
+    author = models.ForeignKey('accounts.User', on_delete=models.SET_NULL, null=True, blank=True)
+
+    # users can attach media files to report (images, videos, etc)
+    # TODO implement this feature
+    #media = models.ManyToManyField('UploadedFile', blank=True)
+
+    # users can specify how the report is handled from a few options
+    class ResolutionMethod(models.TextChoices):
+        CANARY = 'CAN', 'Canary'
+        EXTERNALLY = 'EXT', 'Externally'
+        NO_CONTACT = 'NOC', 'No Contact'
+
+    resolution_method = models.CharField(
+        max_length=3,
+        choices=ResolutionMethod.choices,
+        default=ResolutionMethod.CANARY,
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+    def __str__(self):
+        return self.title
+
+
+class UploadedFile(models.Model):
+    file = models.FileField(upload_to='uploads/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return self.file.name

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ report.title }}</h5>
+                <p class="card-text">{{ report.content }}</p>
+                <p class="card-text">Resolution Method: {{ report.get_resolution_method_display }}</p>
+                <p class="card-text">Created at: {{ report.created_at }}</p>
+                <p class="card-text">Updated at: {{ report.updated_at }}</p>
+                <hr>
+                <h6>Media Files:</h6>
+                {% if report.media.all %}
+                    <ul class="list-group">
+                        {% for media_file in report.media.all %}
+                            <li class="list-group-item">
+                                <a href="{{ media_file.file.url }}" target="_blank">{{ media_file.file.name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No media files attached to this report.</p>
+                {% endif %}
+                <hr>
+                <div class="btn-group" role="group" aria-label="Report Options">
+                    <a href="{% url 'communities:dashboard' community_id%}" class="btn btn-secondary">Back to Community</a>
+                    <button type="button" class="btn btn-primary">Reply to Report</button>
+                    <button type="button" class="btn btn-danger">Close Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

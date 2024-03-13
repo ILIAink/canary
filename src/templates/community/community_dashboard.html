@@ -8,9 +8,9 @@
                 <h2>Community Reports</h2>
                 <a href="{% url 'communities:create_report' community.id %}" class="btn btn-primary mb-3">Create Report</a>
                 <ul class="list-group">
-                    {% for report in community.reports.all %}
+                    {% for report in reports %}
                         <li class="list-group-item">
-                            <a href="{% url 'communities:view_report' report.id %}">{{ report.title }}</a>
+                            <a href="{% url 'communities:view_report' community.id report.id %}">{{ report.title }}</a>
                         </li>
                     {% empty %}
                         <li class="list-group-item">No reports submitted to this community.</li>

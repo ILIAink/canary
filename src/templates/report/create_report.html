@@ -2,7 +2,7 @@
 
 {% block content %}
     <div class="container mt-5">
-        <form method="post" action="{% url 'report:save_report' community_id %}" enctype="multipart/form-data">
+        <form method="post" action="{% url 'communities:save_report' community_id %}" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="mb-3">
                 <label for="title" class="form-label">Title:</label>

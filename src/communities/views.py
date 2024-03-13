@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from .models import Community, CommunityMember
+from .models import Community, CommunityMember, Report
 from django.urls import reverse
 
 # Create your views here.
@@ -57,15 +57,43 @@ def save_community(request):
 
 
 # views for report management for this community
-# use the report app for the actual report views and templates
-# TODO debugging this is the next step
 def create_report(request, community_id):
-    # call the report create view from the reports app
-    return HttpResponseRedirect(reverse("reports:create_report", args=[community_id,]))
-def save_report(request, community_id):
-    # call the report save view from the reports app
-    return HttpResponseRedirect(reverse("reports:save_report", args=[community_id,]))
+    return render(request, 'report/create_report.html', {'community_id': community_id})
 
-def view_report(request, report_id):
-    # call the report view from the reports app
-    return HttpResponseRedirect(reverse("reports:view_report", args=[report_id,]))
+
+# def for saving a report after creation
+def save_report(request, community_id):
+
+    # get the report data from the form
+    # data should be Title, Content, Author, Resolution Method, and Media
+    title = request.POST.get('title')
+    content = request.POST.get('content')
+
+    # if author is anonymous, set to None
+    # else, retrieve the author from the request
+    if request.user.is_authenticated:
+        author = get_user_model().objects.get(email=request.user.email)
+    else:
+        author = None
+
+    resolution_method = request.POST.get('resolution_method')
+
+    # make a new Report model
+    report = Report(title=title, content=content, author=author, resolution_method=resolution_method)
+
+    # attach the report to the community
+    community = get_object_or_404(Community, pk=community_id)
+    report.save()
+    community.reports.add(report)
+
+
+    # TODO add media files
+
+    # go back to the community dashboard (url pattern: community/<int:community_id>/dashboard/)
+    return HttpResponseRedirect(reverse("communities:dashboard", args=[community_id,]))
+
+def view_report(request, community_id, report_id):
+    # get the report object
+    report = get_object_or_404(Report, pk=report_id)
+
+    return render(request, 'report/view_report.html', {'report': report, 'community_id': community_id})
