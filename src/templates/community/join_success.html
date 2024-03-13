@@ -1,10 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block content %}
+    <h2>Join was Successful</h2>
+    <p>return to dashboard</p>
+    <div class="container mt-5">
+        <form method="post" action="{% url 'canary:dashboard' %}">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <button type="submit" class="btn btn-primary">Return to Dashboard</button>
+        </form>
+    </div>
+{% endblock %}
