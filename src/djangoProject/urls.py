@@ -23,5 +23,4 @@ urlpatterns = [
     path('accounts/', include('allauth.socialaccount.urls')),
 
     path('community/', include('communities.urls')),
-    path('report/', include('reports.urls')),
 ]
