@@ -14,4 +14,11 @@
             <button type="submit" class="btn btn-primary">Create Community</button>
         </form>
     </div>
+     <div class="container mt-5">
+        <form method="post" action="{% url 'communities:join_a_community' %}">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <button type="submit" class="btn btn-primary">Join a Community</button>
+        </form>
+    </div>
 {% endblock %}

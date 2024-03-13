@@ -22,6 +22,10 @@ def join_a_community(request):
 
 def join_community_error(request):
     return render(request, 'community/join_community_error.html')
+
+def join_success(request):
+    return render(request, 'community/join_success.html')
+
 # def for saving a community after creation
 def save_community(request):
 
