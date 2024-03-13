@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 from django.http import HttpResponseRedirect
 from .models import Report
@@ -6,12 +6,12 @@ from django.urls import reverse
 
 # Create your views here.
 
-def create_report(request):
-    return render(request, 'create_report.html')
+def create_report(request, community_id):
+    return render(request, 'create_report.html', {'community_id': community_id})
 
 
 # def for saving a report after creation
-def save_report(request, community):
+def save_report(request, community_id):
 
     name = request.POST.get('name')
     password = request.POST.get('password')
@@ -25,4 +25,5 @@ def save_report(request, community):
 
     # TODO add author info
 
-    return HttpResponseRedirect(reverse("admin_community_home", args=community.name))
+    # go back to the community dashboard (url pattern: community/<int:community_id>/dashboard/)
+    return HttpResponseRedirect(reverse("communities:dashboard", args=[community_id,]))
