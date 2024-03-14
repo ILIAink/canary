@@ -42,10 +42,6 @@ class Report(models.Model):
     # the author user is optional (for anonymous reports)
     author = models.ForeignKey('accounts.User', on_delete=models.SET_NULL, null=True, blank=True)
 
-    # users can attach media files to report (images, videos, etc)
-    # TODO implement this feature
-    #media = models.ManyToManyField('UploadedFile', blank=True)
-
     # users can specify how the report is handled from a few options
     class ResolutionMethod(models.TextChoices):
         CANARY = 'CAN', 'Canary'
@@ -69,5 +65,9 @@ class Report(models.Model):
 class UploadedFile(models.Model):
     file = models.FileField(upload_to='uploads/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    # each file is associated with a report
+    report = models.ForeignKey(Report, on_delete=models.CASCADE)
+
     def __str__(self):
         return self.file.name

@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from .models import Community, CommunityMember, Report
+from .models import Community, CommunityMember, Report, UploadedFile
 from django.urls import reverse
 
 # Create your views here.
@@ -86,8 +86,10 @@ def save_report(request, community_id):
     report.save()
     community.reports.add(report)
 
-
-    # TODO add media files
+    # handle media file upload
+    for file in request.FILES.getlist('media'):
+        report_file = UploadedFile(report=report, file=file)
+        report_file.save()
 
     # go back to the community dashboard (url pattern: community/<int:community_id>/dashboard/)
     return HttpResponseRedirect(reverse("communities:dashboard", args=[community_id,]))
@@ -96,4 +98,7 @@ def view_report(request, community_id, report_id):
     # get the report object
     report = get_object_or_404(Report, pk=report_id)
 
-    return render(request, 'report/view_report.html', {'report': report, 'community_id': community_id})
+    # get the media files associated with the report
+    media = report.uploadedfile_set.all()
+
+    return render(request, 'report/view_report.html', {'report': report, 'media': media, 'community_id': community_id})
