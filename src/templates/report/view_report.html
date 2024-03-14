@@ -11,9 +11,9 @@
                 <p class="card-text">Updated at: {{ report.updated_at }}</p>
                 <hr>
                 <h6>Media Files:</h6>
-                {% if report.media.all %}
+                {% if media %}
                     <ul class="list-group">
-                        {% for media_file in report.media.all %}
+                        {% for media_file in media %}
                             <li class="list-group-item">
                                 <a href="{{ media_file.file.url }}" target="_blank">{{ media_file.file.name }}</a>
                             </li>
