@@ -30,6 +30,15 @@ def community_dashboard(request, community_id):
 
     return render(request, 'community/community_dashboard.html', {'community': community, 'members': members, 'reports': reports})
 
+# community membership control
+def join_a_community(request):
+  return render(request, 'community/join_a_community.html')
+
+def join_community_error(request):
+    return render(request, 'community/join_community_error.html')
+
+def join_success(request):
+    return render(request, 'community/join_success.html')
 
 # def for saving a community after creation
 def save_community(request):
@@ -41,7 +50,7 @@ def save_community(request):
 
 
 
-    # Save the report to the database
+    # Save the community to the database
     community.save()
 
     # find the user who created the community by email address
@@ -100,5 +109,36 @@ def view_report(request, community_id, report_id):
 
     # get the media files associated with the report
     media = report.uploadedfile_set.all()
-
+    
     return render(request, 'report/view_report.html', {'report': report, 'media': media, 'community_id': community_id})
+    
+    
+def join_community(request):
+    if request.method == 'POST':
+        community_name = request.POST.get('name', None)
+        password = request.POST.get('password', None)
+
+        if community_name is not None and password is not None:
+            try:
+                # Search for the community by name
+                community = Community.objects.get(name=community_name)
+
+                # Check if the provided password matches the community password
+                if community.password == password:
+                    # Password matches, perform further actions here
+                    # For example, you might redirect to a page displaying community details
+                    member = CommunityMember(community=community, is_admin=0, member=request.user)
+                    member.save()
+                    return HttpResponseRedirect("join_success")
+                else:
+                    # Password does not match
+                    return HttpResponseRedirect("join_community_error")
+            except Community.DoesNotExist:
+                # Community with given name does not exist
+                return HttpResponseRedirect("join_community_error")
+        else:
+            # Invalid POST data
+            return HttpResponseRedirect("join_community_error")
+    else:
+        # GET request, render a form to search for the community
+        return HttpResponseRedirect("join_community_error")

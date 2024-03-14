@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Incorrect Community name or Password</h2>
+    <p>return to Community Join</p>
+    <div class="container mt-5">
+        <form method="post" action="{% url 'communities:join_a_community' %}">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <button type="submit" class="btn btn-primary">Return to Join</button>
+        </form>
+    </div>
+{% endblock %}
