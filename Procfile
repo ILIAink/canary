@@ -1,3 +1,3 @@
-release: python manage.py migrate --run-syncdb
-release: python manage.py collectstatic --noinput
-web: gunicorn djangoProject.wsgi
+release: python src/manage.py migrate --run-syncdb
+release: python src/manage.py collectstatic --noinput
+web: gunicorn src/djangoProject.wsgi
