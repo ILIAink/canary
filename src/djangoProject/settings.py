@@ -67,12 +67,12 @@ INSTALLED_APPS = [
 
 ]
 
-SOCIALACCOUNT_LOGIN_ON_GET=True
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
 AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
-    ]
+]
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACOUNT_USERNAME_REQUIRED = False
@@ -195,6 +195,7 @@ USE_TZ = True
 # --- STATIC AND MEDIA FILE STORAGE
 USE_S3 = os.getenv('USE_S3') == 'TRUE'
 
+# fix
 if USE_S3:
     # aws settings
     AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
@@ -215,13 +216,14 @@ if USE_S3:
     PRIVATE_MEDIA_LOCATION = 'private'
     PRIVATE_FILE_STORAGE = 'djangoProject.storage_backends.PrivateMediaStorage'
 else:
-    STATIC_URL = '/staticfiles/'
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATIC_URL = 'static/'
+    STATICFILES_DIRS = [
+        BASE_DIR.parent / "node_modules",
+        BASE_DIR / "static",
+    ]
+    STATIC_ROOT = BASE_DIR.parent / "static"
     MEDIA_URL = '/mediafiles/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
-
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-
 
 
 # Default primary key field type
