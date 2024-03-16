@@ -5,6 +5,9 @@ from django.db import models
 
 # main community model
 class Community(models.Model):
+    #class Meta:
+        #app_label = 'communities'
+
     name = models.CharField(max_length=100)
     password = models.CharField(max_length=10)
 
