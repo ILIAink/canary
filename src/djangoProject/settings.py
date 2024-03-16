@@ -62,9 +62,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'communities.apps.CommunitiesConfig',
     'accounts.apps.AccountsConfig',
-
     'storages',
-
 ]
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
