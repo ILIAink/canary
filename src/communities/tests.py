@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.apps import AppConfig
-from src.communities.models import Community
+from .models import Community
 
 
 class CommunityTests(TestCase):
@@ -11,4 +11,4 @@ class CommunityTests(TestCase):
 
         response = self.client.get(reverse("communities:dashboard", args=(test_community.id)))
         print(response)
-        assert response.status_code == 200
+        self.assertEqual(response.status_code == 200)
