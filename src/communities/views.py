@@ -49,7 +49,6 @@ def save_community(request):
     community = Community(name=name, password=password, description=description)
 
 
-
     # Save the community to the database
     community.save()
 
