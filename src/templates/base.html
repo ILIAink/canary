@@ -12,13 +12,21 @@
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css"
               rel="stylesheet">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.js"
+                defer></script>
     </head>
     <body class="bg-main-bg min-h-screen min-w-full text-color">
         <header>
             <nav class="bg-lc-800">
                 <div class="display-none m-auto h-[50px] w-full items-center justify-between px-6 md:flex max-w-[1200px]">
-                    <a class="text-orange-800 text-lg font-semibold"
-                       href="{% url 'canary:dashboard' %}">Canary</a>
+                    <div class="hidden md:flex">
+                        {% if user.is_authenticated %}
+                            <a class="text-orange-800 text-lg font-semibold"
+                               href="{% url 'canary:dashboard' %}">Canary</a>
+                        {% else %}
+                            <a class="text-orange-800 text-lg font-semibold" href="/">Canary</a>
+                        {% endif %}
+                    </div>
                     <div class="flex gap-4">
                         {% if user.is_authenticated %}
                             <div x-data="{ open: false }" class="relative">
@@ -36,9 +44,9 @@
                                      @click.away="open = false"
                                      class="absolute right-0 mt-2 py-2 w-48 bg-lc-900 rounded-md shadow-xl z-20">
                                     <a href="{% url 'account_email' %}"
-                                       class="block px-4 py-2 text-sm text-color hover:bg-gray-100">{% trans "Change Email" %}</a>
+                                       class="block px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-gray-600">{% trans "Change Email" %}</a>
                                     <a href="{% url 'account_logout' %}"
-                                       class="block px-4 py-2 text-sm text-color hover:bg-gray-100">{% trans "Sign Out" %}</a>
+                                       class="block px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-gray-600">{% trans "Sign Out" %}</a>
                                 </div>
                             </div>
                         {% else %}

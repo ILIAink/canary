@@ -1,43 +1,54 @@
-{% extends "socialaccount/base_entrance.html" %}
+{% extends "base.html" %}
 {% load i18n %}
 {% load allauth %}
 {% block head_title %}
     {% trans "Signup" %}
 {% endblock head_title %}
 {% block content %}
-<div class="container">
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="text-center">{% trans "Sign Up" %}</h3>
-                </div>
-                <div class="card-body">
-                    <p class="text-center">
-                        {% blocktrans with provider_name=account.get_provider.name site_name=site.name %}
-                            You are about to use your {{provider_name}} account to login to Canary.
-                            As a final step, please complete the following form:
-                        {% endblocktrans %}
-                    </p>
-                    {% url 'socialaccount_signup' as action_url %}
-                    {% element form form=form method="post" action=action_url %}
-                      {% slot body %}
-                          {% csrf_token %}
-                          {% element fields form=form unlabeled=True %}
-                          {% endelement %}
-                          {% if redirect_field_value %}
-                              <input type="hidden"
-                                     name="{{ redirect_field_name }}"
-                                     value="{{ redirect_field_value }}" />
-                          {% endif %}
-                      {% endslot %}
-                      {% slot actions %}
-                        <button type="submit" class="btn btn-primary btn-block">{% trans "Sign Up" %}</button>
-                      {% endslot %}
-                  {% endelement %}
+    <div class="container mx-auto mt-5">
+        <div class="flex justify-center">
+            <div class="w-full max-w-md">
+                <div class="bg-lc-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                    <div class="mb-4">
+                        <h2 class="text-center text-xl text-white">{% trans "Sign Up" %}</h2>
+                    </div>
+                    <div class="card-body text-white">
+                        <form method="post"
+                              action="{% url 'socialaccount_signup' %}"
+                              class="entrance signup">
+                            {% csrf_token %}
+                            {% for field in form.visible_fields %}
+                                <div class="mb-4">
+                                    <label for="{{ field.id_for_label }}"
+                                           class="block text-gray-200 text-sm font-bold mb-2">
+                                        {{ field.label }}:
+                                    </label>
+                                    <div class="mt-1 relative rounded-md">
+                                        <input id="{{ field.id_for_label }}"
+                                               name="{{ field.html_name }}"
+                                               type="{{ field.field.widget.input_type }}"
+                                               class="py-1 px-2 text-button-text block w-full form-input rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-900"
+                                               {% if field.field.widget.attrs.placeholder %}placeholder="{{ field.field.widget.attrs.placeholder }}"{% endif %}>
+                                    </div>
+                                    {{ field.errors }}
+                                </div>
+                            {% endfor %}
+                            <div class="flex items-center justify-between">
+                                <button type="submit"
+                                        class="w-full bg-orange-400 text-white font-bold py-2 px-4 rounded hover:bg-orange-800 focus:shadow-outline transition duration-150 ease-in-out">
+                                    {% trans "Sign Up" %}
+                                </button>
+                            </div>
+                        </form>
+                        <p class="mt-2 mb-2 text-left">
+                            {% blocktrans %}Already have an account? <a href="{{ login_url }}" class="text-primary-green hover:text-primary-purple">Log in!</a>{% endblocktrans %}
+                        </p>
+                        {% if SOCIALACCOUNT_ENABLED %}
+                            {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock content %}

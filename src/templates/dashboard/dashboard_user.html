@@ -1,43 +1,52 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class=>
-        <div>
-            <h2>User Dashboard</h2>
-            <p>Welcome to Canary, simple regular user.</p>
-            <p>Here is your dashboard.</p>
-            <p>Your name: {{ user.first_name }} {{ user.last_name }}</p>
-            <p>Your username: {{ user.username }}</p>
-            <p>Your email: {{ user.email }}</p>
-            <div class="container mt-5">
-                <form method="post" action="{% url 'communities:create_community' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="user_id" value="{{ user.id }}">
-                    <button type="submit" class="btn btn-primary">Create Community</button>
-                </form>
-            </div>
-            <div class="container mt-5">
-                <form method="post" action="{% url 'communities:join_a_community' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="user_id" value="{{ user.id }}">
-                    <button type="submit" class="btn btn-primary">Join a Community</button>
-                </form>
-            </div>
-        </div>
-        <div>
-            {% if user_communities %}
-                {% for community_member in user_communities %}
-                    <div key="{{ community.id }}"
-                         style="border: 1px solid;
-                                border-radius: 0.5rem;
-                                padding: 1rem;
-                                margin: 1rem">
-                        <h2>{{ community_member.community.name }}</h2>
-                        <p>{{ community.description }}</p>
-                        <a href="{%}">View community</a>
-                        <!-- ^TODO: need to get url into community dashboard working -->
+    <div class="container mx-auto mt-5">
+        <div class="flex justify-center">
+            <div class="w-full max-w-md">
+                <div class="bg-lc-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                    <h2 class="mb-2 text-xl text-center text-white">User Dashboard</h2>
+                    <div class="card-body text-white">
+                        <p>Your name: {{ user.first_name }} {{ user.last_name }}</p>
+                        <p>Your username: {{ user.username }}</p>
+                        <p>Your email: {{ user.email }}</p>
+                        <div class="w-auto h-auto mx-auto flex justify-around">
+                            <div class="mt-5">
+                                <form method="post" action="{% url 'communities:create_community' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                                    <button type="submit"
+                                            class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-primary-green hover:text-lc-700 focus:shadow-outline transition duration-150 ease-in-out">
+                                        Create Community
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="mt-5">
+                                <form method="post" action="{% url 'communities:join_a_community' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                                    <button type="submit"
+                                            class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-orange-800 hover:text-lc-700 focus:shadow-outline transition duration-150 ease-in-out">
+                                        Join a Community
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- User Communities -->
+                        {% if user_communities %}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                {% for community_member in user_communities %}
+                                    <div class="bg-lc-700 border border-gray-600 rounded-lg p-4 text-white">
+                                        <h2>{{ community_member.community.name }}</h2>
+                                        <p>{{ community.description }}</p>
+                                        <a href="{% url 'communities:dashboard' community_member.community.id %}"
+                                           class="text-blue-500 hover:text-blue-800">View community</a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
-                {% endfor %}
-            {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

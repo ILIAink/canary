@@ -1,30 +1,50 @@
 {% extends "base.html" %}
-
 {% block content %}
-    <div class="container mt-5">
-        <form method="post" action="{% url 'communities:save_report' community_id %}" enctype="multipart/form-data">
+    <div class="container mx-auto mt-5">
+        <form method="post"
+              action="{% url 'communities:save_report' community_id %}"
+              enctype="multipart/form-data"
+              class="max-w-lg mx-auto">
             {% csrf_token %}
-            <div class="mb-3">
-                <label for="title" class="form-label">Title:</label>
-                <input type="text" class="form-control" id="title" name="title" required>
+            <div class="mb-4">
+                <label for="title" class="block text-gray-700 font-bold mb-2">Title:</label>
+                <input type="text"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       id="title"
+                       name="title"
+                       required>
             </div>
-            <div class="mb-3">
-                <label for="content" class="form-label">Content:</label>
-                <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
+            <div class="mb-4">
+                <label for="content" class="block text-gray-700 font-bold mb-2">Content:</label>
+                <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                          id="content"
+                          name="content"
+                          rows="5"
+                          required></textarea>
             </div>
-            <div class="mb-3">
-                <label for="resolution_method" class="form-label">Resolution Method:</label>
-                <select class="form-select" id="resolution_method" name="resolution_method" required>
+            <div class="mb-4">
+                <label for="resolution_method" class="block text-gray-700 font-bold mb-2">Resolution Method:</label>
+                <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        id="resolution_method"
+                        name="resolution_method"
+                        required>
                     <option value="CAN" selected>Canary</option>
                     <option value="EXT">Externally</option>
                     <option value="NOC">No Contact</option>
                 </select>
             </div>
-            <div class="mb-3">
-                <label for="media" class="form-label">Media Files (optional):</label>
-                <input type="file" class="form-control" id="media" name="media" multiple>
+            <div class="mb-4">
+                <label for="media" class="block text-gray-700 font-bold mb-2">Media Files (optional):</label>
+                <input type="file"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       id="media"
+                       name="media"
+                       multiple>
             </div>
-            <button type="submit" class="btn btn-primary">Submit Report</button>
+            <button type="submit"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Submit Report
+            </button>
         </form>
     </div>
 {% endblock %}

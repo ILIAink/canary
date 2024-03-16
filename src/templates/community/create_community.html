@@ -1,24 +1,40 @@
 {% extends "base.html" %}
-
 {% block content %}
-    <div class="container mt-5">
-        <form method="post" action="{% url 'communities:save_community' %}">
+    <div class="container mx-auto mt-8">
+        <form method="post"
+              action="{% url 'communities:save_community' %}"
+              class="max-w-md mx-auto bg-lc-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
             {% csrf_token %}
-            <div class="mb-3">
-                <label for="name" class="form-label">Community Name:</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+            <h2 class="mb-2 text-xl text-center text-white">Create a Community</h2>
+            <div class="mb-4">
+                <label for="name" class="block text-white font-bold mb-2">Community Name:</label>
+                <input type="text"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-white bg-lc-700 leading-tight focus:outline-none focus:shadow-outline"
+                       id="name"
+                       name="name"
+                       required>
             </div>
-            <div class="mb-3">
-                <label for="password" class="form-label"> Community Password:</label>
-                <input type="password" class="form-control" id="password" name="password" required>
+            <div class="mb-4">
+                <label for="password" class="block text-white font-bold mb-2">Community Password:</label>
+                <input type="password"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-white bg-lc-700 leading-tight focus:outline-none focus:shadow-outline"
+                       id="password"
+                       name="password"
+                       required>
             </div>
-            <div class="mb-3">
-                <label for="description" class="form-label"> Community Description:</label>
-                <input type="text" class="form-control" id="description" name="description" required>
+            <div class="mb-4">
+                <label for="description" class="block text-white font-bold mb-2">Community Description:</label>
+                <input type="text"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-white bg-lc-700 leading-tight focus:outline-none focus:shadow-outline"
+                       id="description"
+                       name="description"
+                       required>
             </div>
             <input type="hidden" name="user_id" value="{{ user.id }}">
-
-            <button type="submit" class="btn btn-primary">Submit Community</button>
+            <button type="submit"
+                    class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-primary-green hover:text-lc-700 focus:shadow-outline transition duration-150 ease-in-out">
+                Submit Community
+            </button>
         </form>
     </div>
 {% endblock %}
