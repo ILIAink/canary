@@ -13,8 +13,8 @@ class CommunityTests(TestCase):
   def test_community_save_community(self):
     request = HttpRequest()
     request.method = "GET"
-    request.POST = {'name': 'testing quality enforcement', 'password': 'testingstinks', 'description': "report bad code"
-                 ,'user_id': 'tester2@gmail.com'}
+    request.POST = {'name': 'testing quality enforcement', 'password': 'testingstinks', 'description': "report bad code"}
+
 
     userModel = apps.get_model('accounts', 'User')
     testUser = userModel.objects.create_user(email="test_user@gmail.com", username='testuser', password="123")
@@ -30,5 +30,6 @@ class CommunityTests(TestCase):
 
     admin = CommunityMember.objects.get(community=community, member=testUser, is_admin=True),
     self.assertIsNotNone(admin)
+
 
 
