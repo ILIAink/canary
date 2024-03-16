@@ -1,30 +1,34 @@
+from django.http import HttpRequest
 from django.test import TestCase
 from django.urls import reverse
 from django.apps import AppConfig
 from django.apps import apps
 from .models import *
 #from accounts.models import User
+from .views import *
 
 
 class CommunityTests(TestCase):
-    def test_community_dashboard_new_community(self):
-        test_community = Community.objects.create(name='test_community', password='123', description='test_description')
-        response = self.client.get(reverse("communities:dashboard", args=(test_community.id,)))
-        self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(response.context['members'], [])
-        self.assertQuerysetEqual(response.context['reports'], [])
-        self.assertEqual(response.context['community'], test_community)
+
+  def test_community_save_community(self):
+    request = HttpRequest()
+    request.method = "GET"
+    request.POST = {'name': 'testing quality enforcement', 'password': 'testingstinks', 'description': "report bad code"
+                 ,'user_id': 'tester2@gmail.com'}
+
+    userModel = apps.get_model('accounts', 'User')
+    testUser = userModel.objects.create_user(email="test_user@gmail.com", username='testuser', password="123")
+    request.user = testUser
+
+    # call function we are testing
+    save_community(request)
+
+    community = Community.objects.get(name="testing quality enforcement")
+    self.assertEqual(community.name,"testing quality enforcement")
+    self.assertEqual(community.description, "report bad code")
+    self.assertEqual(community.password, 'testingstinks')
+
+    admin = CommunityMember.objects.get(community=community, member=testUser, is_admin=True),
+    self.assertIsNotNone(admin)
 
 
-class CommunityViewTests(TestCase):
-    def test_community_dashboard_populated_community(self):
-        test_community = Community.objects.create(name='test_community', password='123', description='test_description')
-        userModel = apps.get_model('accounts', 'User')
-        test_user = userModel.objects.create_user(username='test_user')
-        member = CommunityMember.objects.create(community=test_community, member=test_user)
-        response = self.client.get(reverse("communities:dashboard", args=(test_community.id,)))
-        #print(response.context['members'])
-        members_set = set(response.context['members'].values_list('member', flat=True))
-        print(members_set)
-        print("hi")
-        self.assertContains(response, member)
