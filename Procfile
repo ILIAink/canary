@@ -1,2 +1,2 @@
-release: python src/manage.py migrate && python src/manage.py collectstatic --noinput
+release: python src/manage.py makemigrations accounts admin canary communities && python src/manage.py migrate && python src/manage.py collectstatic --noinput
 web: cd src && gunicorn djangoProject.wsgi
