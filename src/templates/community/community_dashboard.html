@@ -11,6 +11,7 @@
                     {% for report in reports %}
                         <li class="list-group-item">
                             <a href="{% url 'communities:view_report' community.id report.id %}">{{ report.title }}</a>
+                            <span class="float-right text-lc-bright">{{ report.get_status_display }}</span>
                         </li>
                     {% empty %}
                         <li class="list-group-item">No reports submitted to this community.</li>
