@@ -40,6 +40,15 @@ def join_community_error(request):
 def join_success(request):
     return render(request, 'community/join_success.html')
 
+def community_members(request, community_id):
+    # Get the community object or return 404 if not found
+    community = get_object_or_404(Community, id=community_id)
+    # Retrieve community members for the specified community
+    community_members = CommunityMember.objects.filter(community=community)
+    # Pass the community_members data to the template
+    return render(request, 'community_members.html', {'community_members': community_members})
+
+
 # def for saving a community after creation
 def save_community(request):
 
