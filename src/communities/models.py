@@ -28,6 +28,7 @@ class CommunityMember(models.Model):
     community = models.ForeignKey(Community, on_delete=models.CASCADE)
     member = models.ForeignKey('accounts.User', on_delete=models.CASCADE)
     is_admin = models.BooleanField(default=False)
+    is_owner = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

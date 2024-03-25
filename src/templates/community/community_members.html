@@ -1,25 +1,44 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Community Members</title>
-    </head>
-    <body>
-        <h1>Community Members</h1>
-        <ul>
+    <div class="container">
+        <h1 class="mt-5">Community Members</h1>
+        <ul class="list-group mt-3">
             {% for member in community_member %}
-                <li>{{ member.member.username }}{% if member.is_admin %} (Admin){% endif %} -
-                    <form method="post" action="{% url 'communities:remove_member' community_id member.member.id%}" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <input type="hidden" name="user_id" value="{{ user.id }}">
-                        <button type="submit" class="btn btn-primary">remove</button>
-                    </form>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ member.member.username }}
+                    {% if member.member.email == user.email %}
+                        (You)
+                    {% endif %}
+                    {% if member.is_owner %}
+                        <span class="badge bg-danger rounded-pill">Owner</span>
+                    {% elif member.is_admin %}
+                        <span class="badge bg-primary rounded-pill">Admin</span>
+                    {% else %}
+                        <span class="badge bg-secondary rounded-pill">Member</span>
+                    {% endif %}
+                    {% if can_remove and not member.is_admin %}
+                        <form method="post" action="{% url 'communities:remove_member' community_id member.member.id %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                        </form>
+                    {% endif %}
+                    {% if user_role == 'owner' %}
+                        <form method="post" action="{% url 'communities:change_admin_status' community_id member.member.id %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            {% if member.is_admin %}
+                                <button type="submit" class="btn btn-warning btn-sm mx-2">Demote</button>
+                            {% else %}
+                                <button type="submit" class="btn btn-success btn-sm mx-2">Promote</button>
+                            {% endif %}
+                        </form>
+                    {% endif %}
                 </li>
             {% endfor %}
         </ul>
-    </body>
+    </div>
 {% endblock %}
 
 
