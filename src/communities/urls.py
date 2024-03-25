@@ -20,6 +20,7 @@ urlpatterns = [
     path("<int:community_id>/save_report/", views.save_report, name="save_report"),
     path("<int:community_id>/dashboard/", views.community_dashboard, name="dashboard"),
     path("<int:community_id>/report/<int:report_id>/", views.view_report, name="view_report"),
+    path("<int:community_id>/remove_member/<int:member_id>/", views.remove_member, name="remove_member"),
     path("<int:community_id>/community_members/", views.community_members, name="community_members"),
 
 ]

@@ -1,22 +1,24 @@
 {% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Community Members</title>
-</head>
-<body>
-    <h1>Community Members</h1>
-    <ul>
-        {% for member in community_members %}
-            <li>{{ member.member.username }}{% if member.is_admin %} (Admin){% endif %} -
-                <form action="/remove_member/{{ member.id }}/" method="post">
-                    {% csrf_token %}
-                    <button type="submit">Remove</button>
-                </form>
-            </li>
-        {% endfor %}
-    </ul>
-</body>
+{% block content %}
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Community Members</title>
+    </head>
+    <body>
+        <h1>Community Members</h1>
+        <ul>
+            {% for member in community_member %}
+                <li>{{ member.member.username }}{% if member.is_admin %} (Admin){% endif %} -
+                    <form action="/remove_member/{{ member.id }}/" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Remove</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    </body>
+{% endblock %}
 
-# TODO: Add remove action, add button to get to this page
+

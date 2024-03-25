@@ -44,9 +44,9 @@ def community_members(request, community_id):
     # Get the community object or return 404 if not found
     community = get_object_or_404(Community, id=community_id)
     # Retrieve community members for the specified community
-    community_members = CommunityMember.objects.filter(community=community)
+    community_member = CommunityMember.objects.filter(community=community)
     # Pass the community_members data to the template
-    return render(request, 'community_members.html', {'community_members': community_members})
+    return render(request, 'community/community_members.html', {'community_member': community_member})
 
 
 # def for saving a community after creation
@@ -150,3 +150,11 @@ def join_community(request):
     else:
         # GET request, render a form to search for the community
         return HttpResponseRedirect("join_community_error")
+
+def remove_member(request, community_id, member_id):
+    # Find the CommunityMember object to be removed
+    community_member = get_object_or_404(CommunityMember, community_id=community_id, member_id=member_id)
+
+    # Delete the CommunityMember object
+    community_member.delete()
+    return HttpResponseRedirect("community_dashboard")
