@@ -11,9 +11,10 @@
         <ul>
             {% for member in community_member %}
                 <li>{{ member.member.username }}{% if member.is_admin %} (Admin){% endif %} -
-                    <form action="/remove_member/{{ member.id }}/" method="post">
+                    <form method="post" action="{% url 'communities:remove_member' community_id member.member.id%}" enctype="multipart/form-data">
                         {% csrf_token %}
-                        <button type="submit">Remove</button>
+                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                        <button type="submit" class="btn btn-primary">remove</button>
                     </form>
                 </li>
             {% endfor %}
