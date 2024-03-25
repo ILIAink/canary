@@ -48,7 +48,11 @@ def community_members(request, community_id):
 
     # get the permission level of the current user
     user = get_user_model().objects.get(email=request.user.email)
-    user_member = CommunityMember.objects.get(community=community, member=user)
+    try:
+        user_member = CommunityMember.objects.get(community=community, member=user)
+    except CommunityMember.DoesNotExist:
+        return HttpResponseRedirect(reverse("canary:dashboard"))
+
     user_role = 'owner' if user_member.is_owner else 'admin' if user_member.is_admin else 'member'
 
     # can the user remove members?
@@ -174,6 +178,7 @@ def change_admin_status(request, community_id, member_id):
     community_member.is_admin = not community_member.is_admin
     community_member.save()
     return HttpResponseRedirect(reverse("communities:community_members", args=[community_id,]))
+
 def remove_member(request, community_id, member_id):
     # Find the CommunityMember object to be removed
     community = get_object_or_404(Community, id=community_id)
