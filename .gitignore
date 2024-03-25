@@ -9,6 +9,9 @@ media
 # jetbrains #
 .idea
 
+# node.js #
+node_modules
+
 # Backup files # 
 *.bak 
 

@@ -36,4 +36,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
+        # make migrations
+        python src/manage.py makemigrations accounts admin canary communities
+        python src/manage.py migrate
         python src/manage.py test communities 
