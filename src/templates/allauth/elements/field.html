@@ -1,18 +1,21 @@
 {% load allauth %}
-<p>
-    <label for="{{ attrs.id }}">
-        {% slot label %}
-        {% endslot %}
-    </label>
+<p class="mb-4">
+    <label for="{{ attrs.id }}" class="block text-sm font-medium text-gray-700">{% slot 'label' %}{% endslot %}</label>
     {% if attrs.type == "textarea" %}
-        <textarea {% if attrs.required %}required{% endif %}
-                  {% if attrs.rows %}rows="{{ attrs.rows }}"{% endif %}
-                  {% if attrs.disabled %}disabled{% endif %}
-                  {% if attrs.readonly %}readonly{% endif %}
-                  {% if attrs.checked %}checked{% endif %}
-                  {% if attrs.name %}name="{{ attrs.name }}"{% endif %}
-                  {% if attrs.id %}id="{{ attrs.id }}"{% endif %}
-                  {% if attrs.placeholder %}placeholder="{{ attrs.placeholder }}"{% endif %}>{% slot value %}{% endslot %}</textarea>
+        <textarea {% if attrs.required %}required{% endif %} {% if attrs.rows %}rows="{{ attrs.rows }}" {% endif %} {% if attrs.disabled %}disabled {% endif %} {% if attrs.readonly %}readonly {% endif %} {% if attrs.name %}name="{{ attrs.name }}" {% endif %} {% if attrs.id %}id="{{ attrs.id }}" {% endif %} {% if attrs.placeholder %}placeholder="{{ attrs.placeholder }}" {% endif %} class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+            {% slot 'value' %}{% endslot %}
+        </textarea>
+    {% elif attrs.type == "checkbox" %}
+        <div class="flex items-center">
+            <input {% if attrs.required %}required{% endif %}
+                   {% if attrs.disabled %}disabled{% endif %}
+                   {% if attrs.readonly %}readonly{% endif %}
+                   {% if attrs.checked %}checked{% endif %}
+                   {% if attrs.name %}name="{{ attrs.name }}"{% endif %}
+                   {% if attrs.id %}id="{{ attrs.id }}"{% endif %}
+                   type="{{ attrs.type }}"
+                   class="form-checkbox text-indigo-600 h-5 w-5">
+        </div>
     {% else %}
         <input {% if attrs.required %}required{% endif %}
                {% if attrs.disabled %}disabled{% endif %}
@@ -22,11 +25,11 @@
                {% if attrs.id %}id="{{ attrs.id }}"{% endif %}
                {% if attrs.placeholder %}placeholder="{{ attrs.placeholder }}"{% endif %}
                {% if attrs.autocomplete %}autocomplete="{{ attrs.autocomplete }}"{% endif %}
-               value="{{ attrs.value|default_if_none:"" }}"
-               type="{{ attrs.type }}">
+               value="{{ attrs.value|default_if_none:'' }}"
+               type="{{ attrs.type }}"
+               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
     {% endif %}
     {% if slots.help_text %}
-        <span>{% slot help_text %}</span>
-        {% endslot %}
+        <span class="text-sm text-gray-500">{% slot 'help_text' %}{% endslot %}</span>
     {% endif %}
 </p>

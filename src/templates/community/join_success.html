@@ -1,13 +1,17 @@
 {% extends "base.html" %}
-
 {% block content %}
-    <h2>Join was Successful</h2>
-    <p>return to dashboard</p>
-    <div class="container mt-5">
-        <form method="post" action="{% url 'canary:dashboard' %}">
+    <div class="container mx-auto mt-8 text-center">
+        <h2 class="text-2xl font-bold text-green-500 mb-4">Join was Successful</h2>
+        <p class="text-white mb-6">Return to dashboard</p>
+        <form method="post"
+              action="{% url 'canary:dashboard' %}"
+              class="max-w-md mx-auto bg-lc-800 shadow-md rounded-md px-8 pt-6 pb-8 mb-4">
             {% csrf_token %}
             <input type="hidden" name="user_id" value="{{ user.id }}">
-            <button type="submit" class="btn btn-primary">Return to Dashboard</button>
+            <button type="submit"
+                    class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-primary-green hover:text-lc-700 focus:shadow-outline transition duration-150 ease-in-out">
+                Return to Dashboard
+            </button>
         </form>
     </div>
 {% endblock %}
