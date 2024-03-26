@@ -61,4 +61,11 @@
             </div>
         </div>
     </div>
+    <div class="container mt-5">
+        <form method="post" action="{% url 'communities:community_members' community.id %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <button type="submit" class="btn btn-primary">See All Members</button>
+        </form>
+    </div>
 {% endblock %}
