@@ -9,6 +9,9 @@ media
 # jetbrains #
 .idea
 
+# node.js #
+node_modules
+
 # Backup files # 
 *.bak 
 
@@ -138,3 +141,6 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+
+
+/node_modules

@@ -1,6 +1,17 @@
 {% extends "base.html" %}
-
+{% load allauth account %}
+{% load i18n %}
 {% block content %}
-    <h2>Home</h2>
-    <p>Welcome to Canary</p>
+    <div class="container mx-auto mt-10 text-center">
+        <h1 class="text-4xl font-bold text-gray-100 mb-6">Welcome to Canary</h1>
+        <p class="text-lg text-gray-200 mb-8">
+            Canary is a vibrant community where you get to snitch without getting stitches (here's hoping)
+        </p>
+        <div class="flex justify-center">
+            <a href="{% url 'account_signup' %}"
+               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4">Join Now</a>
+            <a href="{% url 'account_login' %}"
+               class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Log In</a>
+        </div>
+    </div>
 {% endblock %}

@@ -1,13 +1,17 @@
 {% extends "base.html" %}
-
 {% block content %}
-    <h2>Incorrect Community name or Password</h2>
-    <p>return to Community Join</p>
-    <div class="container mt-5">
-        <form method="post" action="{% url 'communities:join_a_community' %}">
+    <div class="container mx-auto mt-8 text-center">
+        <h2 class="text-2xl font-bold text-red-500 mb-4">Incorrect Community name or Password</h2>
+        <p class="text-white mb-6">Return to Community Join</p>
+        <form method="post"
+              action="{% url 'communities:join_a_community' %}"
+              class="max-w-md mx-auto bg-lc-800 shadow-md rounded-md px-8 pt-6 pb-8 mb-4">
             {% csrf_token %}
             <input type="hidden" name="user_id" value="{{ user.id }}">
-            <button type="submit" class="btn btn-primary">Return to Join</button>
+            <button type="submit"
+                    class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-orange-800 hover:text-lc-700 focus:shadow-outline transition duration-150 ease-in-out">
+                Return to Join
+            </button>
         </form>
     </div>
 {% endblock %}

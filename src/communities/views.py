@@ -40,6 +40,30 @@ def join_community_error(request):
 def join_success(request):
     return render(request, 'community/join_success.html')
 
+def community_members(request, community_id):
+    # Get the community object or return 404 if not found
+    community = get_object_or_404(Community, id=community_id)
+    # Retrieve community members for the specified community
+    community_member = CommunityMember.objects.filter(community=community)
+
+    # get the permission level of the current user
+    user = get_user_model().objects.get(email=request.user.email)
+    try:
+        user_member = CommunityMember.objects.get(community=community, member=user)
+    except CommunityMember.DoesNotExist:
+        return HttpResponseRedirect(reverse("canary:dashboard"))
+
+    user_role = 'owner' if user_member.is_owner else 'admin' if user_member.is_admin else 'member'
+
+    # can the user remove members?
+    can_remove = user_member.is_owner or user_member.is_admin
+
+    print(user_role, can_remove)
+
+    # Pass the community_members data to the template
+    return render(request, 'community/community_members.html', {'community_id': community_id, 'community_member': community_member, 'user_role': user_role, 'can_remove': can_remove})
+
+
 # def for saving a community after creation
 def save_community(request):
 
@@ -56,7 +80,7 @@ def save_community(request):
     user = get_user_model().objects.get(email=request.user.email)
 
     # create a community member object for the user who created the community
-    admin_member = CommunityMember(community=community, member=user, is_admin=True)
+    admin_member = CommunityMember(community=community, member=user, is_admin=True, is_owner=True)
 
     admin_member.save()
 
@@ -168,3 +192,27 @@ def join_community(request):
     else:
         # GET request, render a form to search for the community
         return HttpResponseRedirect("join_community_error")
+
+
+def change_admin_status(request, community_id, member_id):
+    # Find the CommunityMember object to be modified
+    community = get_object_or_404(Community, id=community_id)
+    user = get_user_model().objects.get(id=member_id)
+    # Retrieve community members for the specified community
+    community_member = get_object_or_404(CommunityMember, community=community, member=user)
+
+    # Toggle the is_admin status of the CommunityMember object
+    community_member.is_admin = not community_member.is_admin
+    community_member.save()
+    return HttpResponseRedirect(reverse("communities:community_members", args=[community_id,]))
+
+def remove_member(request, community_id, member_id):
+    # Find the CommunityMember object to be removed
+    community = get_object_or_404(Community, id=community_id)
+    user = get_user_model().objects.get(id=member_id)
+    # Retrieve community members for the specified community
+    community_member = get_object_or_404(CommunityMember, community=community, member=user)
+
+    # Delete the CommunityMember object
+    community_member.delete()
+    return HttpResponseRedirect(reverse("communities:community_members", args=[community_id,]))
