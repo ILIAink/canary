@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
     <div class="container mx-auto mt-8">
         <h1 class="text-3xl font-bold text-center text-white mb-8">{{ community.name }}</h1>
@@ -21,8 +22,6 @@
                 </div>
                 <ul class="divide-y divide-lc-med-dark">
                     {% for report in reports %}
-                        <li class="list-group-item">
-                            <a href="{% url 'communities:view_report' community.id report.id %}">{{ report.title }}</a>
                         <li class="py-4">
                             <a href="{% url 'communities:view_report' community.id report.id %}"
                                class="text-lc-bright hover:text-lc-orange transition-colors">{{ report.title }}</a>
@@ -33,9 +32,22 @@
                     {% endfor %}
                 </ul>
             </div>
+
             <div class="p-3 border border-gray-600 rounded-lg">
                 <div class="flex items-center justify-between">
                     <h2 class="text-orange-800 text-2xl font-semibold mb-4">Community Information</h2>
+                    <button onclick="openInvitePopup()"
+                            class="inline-flex items-center justify-center bg-lc-orange text-white p-2 rounded mb-4 hover:bg-gray-500 transition-colors">
+                        <svg class="w-5 h-5 mr-2"
+                             fill="none"
+                             stroke="currentColor"
+                             viewBox="0 0 24 24"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                            </path>
+                        </svg>
+                        Invite Members
+                    </button>
                     <a href="#"
                        class="inline-flex items-center justify-center bg-lc-orange text-white p-2 rounded mb-4 hover:bg-gray-500 transition-colors">
                         <svg class="w-5 h-5 mr-2"
@@ -71,4 +83,84 @@
             <button type="submit" class="btn btn-primary">See All Members</button>
         </form>
     </div>
+<!-- Invite Members Popup -->
+    <div id="invitePopup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+        <div class="bg-white rounded-lg w-1/2 p-6">
+            <h2 class="text-xl font-semibold mb-4">Create Invite Link</h2>
+            <form id="inviteForm" method="post">
+                {% csrf_token %}
+                <div class="mb-4 justify-center items-center">
+                    <label for="num_invites" class="block text-sm font-medium text-gray-700">Max Number of Uses (Enter 0 for No Limit)</label>
+                    <input type="number" name="num_invites" id="num_invites" class="mb-4 bg-gray-300" value="0">
+                    <label for="expiration" class="block text-sm font-medium text-gray-700">Expiration:</label>
+                    <select name="expiration" id="expiration" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                        <option value="1h">1 Hour</option>
+                        <option value="1d">1 Day</option>
+                        <option value="1w">1 Week</option>
+                        <option value="1m">1 Month</option>
+                        <option value="never">Never</option>
+                    </select>
+                </div>
+                <div class="flex justify-end mt-2">
+                    <button onclick="closeInvitePopup()" type="submit" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Generate Link</button>
+                    <button onclick="closeInvitePopup()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Cancel</button>
+                </div>
+            </form>
+        </div>x
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function openInvitePopup() {
+            console.log('Opening invite popup');
+            document.getElementById('invitePopup').classList.remove('hidden');
+        }
+
+        function closeInvitePopup() {
+            document.getElementById('invitePopup').classList.add('hidden');
+        }
+    </script>
+    <script>
+        // Function to copy invite link to clipboard
+        function copyToClipboard(text) {
+            const input = document.createElement('input');
+            input.style.position = 'fixed';
+            input.style.opacity = 0;
+            input.value = text;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+        }
+
+        // Add event listener to form submission for copying invite link to clipboard
+        document.getElementById('inviteForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const numInvites = document.getElementById('num_invites').value;
+            const expiration = document.getElementById('expiration').value;
+            console.log("Fetching invite link with properties: ", numInvites, expiration);
+            fetch("{% url 'communities:generate_invite' community.id %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    num_invites: numInvites,
+                    expiration: expiration
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // append invite link to domain
+                    data.invite_link = window.location.origin + data.invite_link;
+                    copyToClipboard(data.invite_link);
+                    alert('Invite link copied to clipboard!');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    </script>
 {% endblock %}
