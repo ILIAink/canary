@@ -132,8 +132,35 @@ def view_report(request, community_id, report_id):
 
     # get the media files associated with the report
     media = report.uploadedfile_set.all()
+
+    community = Community.objects.get(pk=community_id)
+
+    is_admin = False
+    if request.user.is_authenticated:
+        user = get_user_model().objects.get(email=request.user.email)
+        is_admin = user.communitymember_set.filter(community=community, is_admin=True).exists()
+
+        print(user)
+        print(is_admin)
     
-    return render(request, 'report/view_report.html', {'report': report, 'media': media, 'community_id': community_id})
+    return render(request, 'report/view_report.html', {'report': report, 'media': media, 'community': community, 'is_admin': is_admin})
+
+def edit_report(request, community_id, report_id):
+    # get the report object
+    report = get_object_or_404(Report, pk=report_id)
+
+    status = request.POST.get('status')
+    notes = request.POST.get('notes')
+
+    if status:
+        report.status = status
+    if notes:
+        report.notes = notes
+
+    report.save()
+
+    # send the user back to the report view
+    return HttpResponseRedirect(reverse("communities:view_report", args=[community_id, report_id]))
     
     
 def join_community(request):

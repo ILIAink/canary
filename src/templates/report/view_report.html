@@ -7,6 +7,32 @@
                 <h5 class="card-title">{{ report.title }}</h5>
                 <p class="card-text">{{ report.content }}</p>
                 <p class="card-text">Resolution Method: {{ report.get_resolution_method_display }}</p>
+                <p class="card-text">Status:
+                    {% if is_admin %}
+                        <form method="post" action="{% url 'communities:edit_report' community.id report.id %}">
+                            {% csrf_token %}
+                                <select name="status">
+                                    {% for status in report.Status.choices %}
+                                        <option value="{{ status.0 }}" {% if report.status == status.0 %}selected{% endif %}>{{ status.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            <input type="submit" value="Update">
+                        </form>
+                    {% else %}
+                        {{ report.get_status_display }}
+                    {% endif %}
+                </p>
+                <p class="card-text">Notes:
+                    {% if is_admin %}
+                        <form method="post" action="{% url 'communities:edit_report' community.id report.id %}">
+                            {% csrf_token %}
+                            <textarea name="notes">{{ report.notes }}</textarea>
+                            <input type="submit" value="Save">
+                        </form>
+                    {% else %}
+                        {{ report.notes }}
+                    {% endif %}
+                </p>
                 <p class="card-text">Created at: {{ report.created_at }}</p>
                 <p class="card-text">Updated at: {{ report.updated_at }}</p>
                 <hr>
@@ -24,7 +50,7 @@
                 {% endif %}
                 <hr>
                 <div class="btn-group" role="group" aria-label="Report Options">
-                    <a href="{% url 'communities:dashboard' community_id%}" class="btn btn-secondary">Back to Community</a>
+                    <a href="{% url 'communities:dashboard' community.id %}" class="btn btn-secondary">Back to Community</a>
                     <button type="button" class="btn btn-primary">Reply to Report</button>
                     <button type="button" class="btn btn-danger">Close Report</button>
                 </div>

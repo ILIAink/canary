@@ -58,6 +58,21 @@ class Report(models.Model):
         default=ResolutionMethod.CANARY,
     )
 
+    # reports have a status, either "New", "In Progress", or "Resolved"
+    class Status(models.TextChoices):
+        NEW = 'NEW', 'New'
+        IN_PROGRESS = 'INP', 'In Progress'
+        RESOLVED = 'RES', 'Resolved'
+
+    status = models.CharField(
+        max_length=3,
+        choices=Status.choices,
+        default=Status.NEW,
+    )
+
+    # reports have a large text field for notes added by an admin
+    notes = models.TextField(blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

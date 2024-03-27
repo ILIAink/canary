@@ -21,9 +21,12 @@
                 </div>
                 <ul class="divide-y divide-lc-med-dark">
                     {% for report in reports %}
+                        <li class="list-group-item">
+                            <a href="{% url 'communities:view_report' community.id report.id %}">{{ report.title }}</a>
                         <li class="py-4">
                             <a href="{% url 'communities:view_report' community.id report.id %}"
                                class="text-lc-bright hover:text-lc-orange transition-colors">{{ report.title }}</a>
+                            <span class="float-right text-lc-bright">{{ report.get_status_display }}</span>
                         </li>
                     {% empty %}
                         <li class="py-4 text-lc-bright">No reports submitted to this community.</li>
