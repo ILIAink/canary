@@ -20,16 +20,6 @@
                                     </button>
                                 </form>
                             </div>
-                            <div class="mt-5">
-                                <form method="post" action="{% url 'communities:join_a_community' %}">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="user_id" value="{{ user.id }}">
-                                    <button type="submit"
-                                            class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-orange-800 hover:text-lc-700 focus:shadow-outline transition duration-150 ease-in-out">
-                                        Join a Community
-                                    </button>
-                                </form>
-                            </div>
                         </div>
                         <!-- User Communities -->
                         {% if user_communities %}

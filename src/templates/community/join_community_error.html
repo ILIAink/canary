@@ -1,7 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="container mx-auto mt-8 text-center">
-        <h2 class="text-2xl font-bold text-red-500 mb-4">Incorrect Community name or Password</h2>
+        <h2 class="text-2xl font-bold text-red-500 mb-4">
+            {% if error_type == 'invalid_link' %}
+                This link is invalid or has expired. Please ask the community admin to create a new link.
+            {% elif error_type == 'already_joined' %}
+                You are already a member of this community.
+            {% else %}
+                An error occurred while trying to join the community. Please try again.
+            {% endif %}
+        </h2>
         <p class="text-white mb-6">Return to Community Join</p>
         <form method="post"
               action="{% url 'communities:join_a_community' %}"

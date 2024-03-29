@@ -10,7 +10,7 @@ def home(request):
    return render(request, 'home.html')
 
 
-# login view - a simple login page
+# login view - redirect to user dashboard by default, next otherwise
 def login(request):
    return render(request, 'login.html')
 
