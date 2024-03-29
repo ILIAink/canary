@@ -13,7 +13,6 @@ class Community(models.Model):
     # each community has a unique id
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
-    password = models.CharField(max_length=10)
 
     description = models.TextField()
 

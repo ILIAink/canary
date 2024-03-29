@@ -144,9 +144,8 @@ def community_members(request, community_id):
 def save_community(request):
 
     name = request.POST.get('name')
-    password = request.POST.get('password')
     description = request.POST.get('description')
-    community = Community(name=name, password=password, description=description)
+    community = Community(name=name, description=description)
 
 
     # Save the community to the database
