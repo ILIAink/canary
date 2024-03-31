@@ -215,8 +215,9 @@ def view_report(request, community_id, report_id):
         user = get_user_model().objects.get(id=request.user.id)
         is_admin = user.communitymember_set.filter(community=community, is_admin=True).exists()
 
-        print(user)
-        print(is_admin)
+        if is_admin and report.status == 'NEW':
+            report.status = 'INP'
+            report.save()
     
     return render(request, 'report/view_report.html', {'report': report, 'media': media, 'community': community, 'is_admin': is_admin})
 
@@ -236,7 +237,15 @@ def edit_report(request, community_id, report_id):
 
     # send the user back to the report view
     return HttpResponseRedirect(reverse("communities:view_report", args=[community_id, report_id]))
-    
+
+def delete_report(request, community_id, report_id):
+    # get the report object
+    report = get_object_or_404(Report, pk=report_id)
+
+    report.delete()
+
+    # send the user back to the community dashboard
+    return HttpResponseRedirect(reverse("communities:dashboard", args=[community_id,]))
     
 def join_community(request):
     if request.method == 'POST':
