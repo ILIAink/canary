@@ -23,6 +23,7 @@ urlpatterns = [
     re_path(r"^(?P<community_id>[0-9a-f-]+)/save_report/", views.save_report, name="save_report"),
     re_path(r"^(?P<community_id>[0-9a-f-]+)/report/(?P<report_id>[0-9a-f-]+)/$", views.view_report, name="view_report"),
     re_path(r"^(?P<community_id>[0-9a-f-]+)/report/(?P<report_id>[0-9a-f-]+)/edit/", views.edit_report, name="edit_report"),
+    re_path(r"^(?P<community_id>[0-9a-f-]+)/report/(?P<report_id>[0-9a-f-]+)/delete/", views.delete_report, name="delete_report"),
     re_path(r"^(?P<community_id>[0-9a-f-]+)/change_admin_status/(?P<member_id>[0-9a-f-]+)/", views.change_admin_status,
             name="change_admin_status"),
     re_path(r"^(?P<community_id>[0-9a-f-]+)/remove_member/(?P<member_id>[0-9a-f-]+)/", views.remove_member,
