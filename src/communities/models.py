@@ -1,5 +1,7 @@
 from django.db import models
-
+import uuid
+from django.utils import timezone
+from django.contrib.auth import get_user_model
 # Create your models here.
 
 
@@ -8,8 +10,9 @@ class Community(models.Model):
     #class Meta:
         #app_label = 'communities'
 
+    # each community has a unique id
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
-    password = models.CharField(max_length=10)
 
     description = models.TextField()
 
@@ -22,11 +25,22 @@ class Community(models.Model):
     def __str__(self):
         return self.name
 
+# invite link model
+class InviteLink(models.Model):
+    community = models.ForeignKey(Community, on_delete=models.CASCADE)
+    token = models.UUIDField(default=uuid.uuid4, editable=False)
+    expiration_time = models.DateTimeField()
+    # max uses for link, 0 means unlimited
+    max_uses = models.IntegerField(default=0)
+    used_count = models.IntegerField(default=0)
+
+    def is_valid(self):
+        return (self.used_count < self.max_uses or self.max_uses == 0) and self.expiration_time > timezone.now()
 
 # community member relational model
 class CommunityMember(models.Model):
     community = models.ForeignKey(Community, on_delete=models.CASCADE)
-    member = models.ForeignKey('accounts.User', on_delete=models.CASCADE)
+    member = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     is_admin = models.BooleanField(default=False)
     is_owner = models.BooleanField(default=False)
 
@@ -40,11 +54,12 @@ class CommunityMember(models.Model):
 
 # report model
 class Report(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=100)
     content = models.TextField()
 
     # the author user is optional (for anonymous reports)
-    author = models.ForeignKey('accounts.User', on_delete=models.SET_NULL, null=True, blank=True)
+    author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, blank=True)
 
     # users can specify how the report is handled from a few options
     class ResolutionMethod(models.TextChoices):

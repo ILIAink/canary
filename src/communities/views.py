@@ -1,10 +1,15 @@
-from django.shortcuts import render
+import json
 
-from django.http import HttpResponseRedirect
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.utils import timezone
+
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from .models import Community, CommunityMember, Report, UploadedFile
+from .models import Community, CommunityMember, Report, UploadedFile, InviteLink
 from django.urls import reverse
+from .forms import InviteForm
 
 # Create your views here.
 
@@ -28,14 +33,85 @@ def community_dashboard(request, community_id):
     # get the reports submitted to the community
     reports = community.reports.all()
 
+    if request.method == 'POST':
+        form = InviteForm(request.POST)
+        if form.is_valid():
+            expiration = form.cleaned_data['expiration']
+            # Generate invite link logic goes here
+            messages.success(request, 'Invite link created successfully.')  # You can use Django messages framework
+            return redirect('communities:dashboard', community_id=community_id)
+    else:
+        form = InviteForm()
+
     return render(request, 'community/community_dashboard.html', {'community': community, 'members': members, 'reports': reports})
 
 # community membership control
 def join_a_community(request):
   return render(request, 'community/join_a_community.html')
 
-def join_community_error(request):
-    return render(request, 'community/join_community_error.html')
+def join_community_by_invite(request, token):
+    try:
+        invite_link = InviteLink.objects.get(token=token)
+        if invite_link.is_valid():
+            # Log in the user if not already logged in
+            if not request.user.is_authenticated:
+                return render(request, 'account/login.html')
+
+            # Check if the user is already a member of the community
+            if CommunityMember.objects.filter(community=invite_link.community, member=request.user).exists():
+                return redirect('communities:dashboard', community_id=invite_link.community.id)
+
+            # Add the user to the community
+            CommunityMember.objects.create(community=invite_link.community, member=request.user)
+
+            # Update the used count of the invite link
+            invite_link.used_count += 1
+            invite_link.save()
+
+            return redirect('communities:join_success')  # Redirect to join success page
+        else:
+            # delete the expired invite link
+            invite_link.delete()
+            return redirect('communities:join_community_error', error_type='invalid_link')  # Redirect to error page for expired or invalid link
+    except InviteLink.DoesNotExist:
+        return redirect('communities:join_community_error', error_type='invalid_link')  # Redirect to error page if invite link does not exist
+def generate_invite_link(request, community_id):
+
+    # get properties from request
+    body = json.loads(request.body)
+    expiration = body['expiration']
+    max_uses = body['num_invites']
+
+    # expiration is either '1h', '1d', '1w', '1m', or 'never'
+    match expiration:
+        case '1h':
+            expiration_time = timezone.now() + timezone.timedelta(hours=1)
+        case '1d':
+            expiration_time = timezone.now() + timezone.timedelta(days=1)
+        case '1w':
+            expiration_time = timezone.now() + timezone.timedelta(weeks=1)
+        case '1m':
+            expiration_time = timezone.now() + timezone.timedelta(weeks=4)
+        case 'never':
+            expiration_time = timezone.now() + timezone.timedelta(weeks=52)
+
+    if max_uses == '':
+        max_uses = 1
+
+    # generate a new invite link
+    invite_link = InviteLink(community_id=community_id, expiration_time=expiration_time, max_uses=max_uses)
+    invite_link.save()
+
+    # create the actual link
+    # url pattern: invite/<UUID:token>/
+    link_str = reverse("communities:join_community_by_invite", args=[str(invite_link.token)])
+
+    # return a response with with invite link token and request headers
+    return HttpResponse(json.dumps({'invite_link': link_str}), content_type='application/json')
+
+
+def join_community_error(request, error_type):
+    return render(request, 'community/join_community_error.html', {'error_type': error_type})
 
 def join_success(request):
     return render(request, 'community/join_success.html')
@@ -47,7 +123,7 @@ def community_members(request, community_id):
     community_member = CommunityMember.objects.filter(community=community)
 
     # get the permission level of the current user
-    user = get_user_model().objects.get(email=request.user.email)
+    user = get_user_model().objects.get(id=request.user.id)
     try:
         user_member = CommunityMember.objects.get(community=community, member=user)
     except CommunityMember.DoesNotExist:
@@ -68,23 +144,22 @@ def community_members(request, community_id):
 def save_community(request):
 
     name = request.POST.get('name')
-    password = request.POST.get('password')
     description = request.POST.get('description')
-    community = Community(name=name, password=password, description=description)
+    community = Community(name=name, description=description)
 
 
     # Save the community to the database
     community.save()
 
-    # find the user who created the community by email address
-    user = get_user_model().objects.get(email=request.user.email)
+    # find the user who created the community by ID
+    user = get_user_model().objects.get(id=request.user.id)
 
     # create a community member object for the user who created the community
     admin_member = CommunityMember(community=community, member=user, is_admin=True, is_owner=True)
 
     admin_member.save()
 
-    # url pattern: community/<int:community_id>/dashboard/
+    # url pattern: community/<UUID:community_id>/dashboard/
     return HttpResponseRedirect(reverse("communities:dashboard", args=[community.id,]))
 
 
@@ -104,7 +179,7 @@ def save_report(request, community_id):
     # if author is anonymous, set to None
     # else, retrieve the author from the request
     if request.user.is_authenticated:
-        author = get_user_model().objects.get(email=request.user.email)
+        author = get_user_model().objects.get(id=request.user.id)
     else:
         author = None
 
@@ -137,7 +212,7 @@ def view_report(request, community_id, report_id):
 
     is_admin = False
     if request.user.is_authenticated:
-        user = get_user_model().objects.get(email=request.user.email)
+        user = get_user_model().objects.get(id=request.user.id)
         is_admin = user.communitymember_set.filter(community=community, is_admin=True).exists()
 
         print(user)
