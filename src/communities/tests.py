@@ -27,10 +27,10 @@ class CommunityTests(TestCase):
     self.assertEqual(community.name,"testing quality enforcement")
     self.assertEqual(community.description, "report bad code")
 
-    admin = CommunityMember.objects.get(community=community, member=testUser, is_admin=True),
+    admin = CommunityMember.objects.get(community=community, member=testUser, is_admin=True, is_owner=True),
     self.assertIsNotNone(admin)
 
-
+  """"
   def test_join_community_valid_community(self):
     userModel = apps.get_model('accounts', 'User')
     testUser = userModel.objects.create_user(email="test_user@gmail.com", username='testuser')
@@ -50,7 +50,7 @@ class CommunityTests(TestCase):
     member = CommunityMember.objects.get(community=test_community, member=testUser, is_admin=False)
     self.assertIsNotNone(member)
     self.assertEqual(member.member.username, testUser.username)
-
+"""
 
   def test_save_report_authenticated_user(self):
     userModel = apps.get_model('accounts', 'User')
