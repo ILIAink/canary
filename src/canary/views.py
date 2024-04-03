@@ -19,7 +19,7 @@ def login(request):
 def dashboard(request):
    if request.user.is_authenticated:
        user_communities = CommunityMember.objects.filter(member=request.user)
-       if request.user.is_staff:  # Check if the user is an administrator
+       if False:#request.user.is_staff:  # Check if the user is an administrator
            return render(request, 'dashboard/dashboard_admin.html', {'user': request.user, 'user_communities': user_communities})
        else:
            return render(request, 'dashboard/dashboard_user.html', {'user': request.user, 'user_communities': user_communities})

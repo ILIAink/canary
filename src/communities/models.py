@@ -33,6 +33,7 @@ class InviteLink(models.Model):
     # max uses for link, 0 means unlimited
     max_uses = models.IntegerField(default=0)
     used_count = models.IntegerField(default=0)
+    link_type = models.CharField(max_length=4, default='join') # join or anon for now
 
     def is_valid(self):
         return (self.used_count < self.max_uses or self.max_uses == 0) and self.expiration_time > timezone.now()

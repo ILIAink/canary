@@ -30,9 +30,18 @@ def community_dashboard(request, community_id):
     # get the community members
     members = CommunityMember.objects.filter(community=community)
 
+    # log in the user if not already logged in
+    if not request.user.is_authenticated:
+        return render(request, 'account/login.html')
+
+    # if the user is not a member of the community, redirect to their user dashboard
+    if not CommunityMember.objects.filter(community=community, member=request.user).exists():
+        return HttpResponseRedirect(reverse("canary:dashboard"))
+
     # get the reports submitted to the community
     reports = community.reports.all()
 
+    # TODO is this ever used?
     if request.method == 'POST':
         form = InviteForm(request.POST)
         if form.is_valid():
@@ -59,6 +68,7 @@ def join_community_by_invite(request, token):
 
             # Check if the user is already a member of the community
             if CommunityMember.objects.filter(community=invite_link.community, member=request.user).exists():
+                messages.success(request, 'You are already a member of this community.')
                 return redirect('communities:dashboard', community_id=invite_link.community.id)
 
             # Add the user to the community
@@ -71,7 +81,6 @@ def join_community_by_invite(request, token):
             return redirect('communities:join_success')  # Redirect to join success page
         else:
             # delete the expired invite link
-            invite_link.delete()
             return redirect('communities:join_community_error', error_type='invalid_link')  # Redirect to error page for expired or invalid link
     except InviteLink.DoesNotExist:
         return redirect('communities:join_community_error', error_type='invalid_link')  # Redirect to error page if invite link does not exist
@@ -81,6 +90,7 @@ def generate_invite_link(request, community_id):
     body = json.loads(request.body)
     expiration = body['expiration']
     max_uses = body['num_invites']
+    link_type = body['link_type']
 
     # expiration is either '1h', '1d', '1w', '1m', or 'never'
     match expiration:
@@ -99,14 +109,20 @@ def generate_invite_link(request, community_id):
         max_uses = 1
 
     # generate a new invite link
-    invite_link = InviteLink(community_id=community_id, expiration_time=expiration_time, max_uses=max_uses)
+    invite_link = InviteLink(community_id=community_id, expiration_time=expiration_time, max_uses=max_uses, link_type=link_type)
     invite_link.save()
 
     # create the actual link
-    # url pattern: invite/<UUID:token>/
-    link_str = reverse("communities:join_community_by_invite", args=[str(invite_link.token)])
+    if link_type == 'join':
+        # url pattern: invite/<UUID:token>/
+        link_str = reverse("communities:join_community_by_invite", args=[str(invite_link.token)])
+    elif link_type == 'anon':
+        # url pattern: community/<UUID:community_id>/anon_report/
+        link_str = reverse("communities:create_anonymous_report", args=[str(invite_link.token)])
+    else:
+        return HttpResponse(json.dumps({'error': 'Invalid link type'}), content_type='application/json', status=400)
 
-    # return a response with with invite link token and request headers
+    # return a response with invite link token and request headers
     return HttpResponse(json.dumps({'invite_link': link_str}), content_type='application/json')
 
 
@@ -167,6 +183,25 @@ def save_community(request):
 def create_report(request, community_id):
     return render(request, 'report/create_report.html', {'community_id': community_id})
 
+def create_anonymous_report(request, token):
+
+    # get the invite link object
+    invite_link = get_object_or_404(InviteLink, token=token)
+
+    # get the community from the invite link
+    community = invite_link.community
+
+    if invite_link.is_valid():
+
+        invite_link.used_count += 1
+        invite_link.save()
+
+        # TODO if a user is logged in when they use the link, their report is not anonymous (it should be)
+        return render(request, 'report/create_report.html', {'community_id': community.id})
+    else:
+        # delete the expired invite link
+        return redirect('communities:join_community_error', error_type='invalid_link')
+
 
 # def for saving a report after creation
 def save_report(request, community_id):
@@ -199,7 +234,9 @@ def save_report(request, community_id):
         report_file.save()
 
     # go back to the community dashboard (url pattern: community/<int:community_id>/dashboard/)
+    messages.success(request, 'Report submitted!')
     return HttpResponseRedirect(reverse("communities:dashboard", args=[community_id,]))
+
 
 def view_report(request, community_id, report_id):
     # get the report object
@@ -246,7 +283,8 @@ def delete_report(request, community_id, report_id):
 
     # send the user back to the community dashboard
     return HttpResponseRedirect(reverse("communities:dashboard", args=[community_id,]))
-    
+
+# TODO delete this (deprecated)
 def join_community(request):
     if request.method == 'POST':
         community_name = request.POST.get('name', None)
