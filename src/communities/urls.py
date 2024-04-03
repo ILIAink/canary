@@ -18,6 +18,9 @@ urlpatterns = [
     re_path(r"^generate_invite/(?P<community_id>[0-9a-f-]+)/$", views.generate_invite_link, name="generate_invite"),
     re_path(r"^invite/(?P<token>[0-9a-f-]+)/$", views.join_community_by_invite, name="join_community_by_invite"),
 
+    # url for submitting anonymously through a link
+    re_path(r"^(?P<token>[0-9a-f-]+)/anon_report/", views.create_anonymous_report, name="create_anonymous_report"),
+
     # urls for report management
     re_path(r"^(?P<community_id>[0-9a-f-]+)/create_report/", views.create_report, name="create_report"),
     re_path(r"^(?P<community_id>[0-9a-f-]+)/save_report/", views.save_report, name="save_report"),

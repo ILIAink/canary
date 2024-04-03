@@ -3,22 +3,21 @@
     <div class="container mx-auto mt-8 text-center">
         <h2 class="text-2xl font-bold text-red-500 mb-4">
             {% if error_type == 'invalid_link' %}
-                This link is invalid or has expired. Please ask the community admin to create a new link.
+                This link is invalid or has expired. Please ask a community admin to create a new link.
             {% elif error_type == 'already_joined' %}
                 You are already a member of this community.
             {% else %}
                 An error occurred while trying to join the community. Please try again.
             {% endif %}
         </h2>
-        <p class="text-white mb-6">Return to Community Join</p>
         <form method="post"
-              action="{% url 'communities:join_a_community' %}"
+              action="{% url 'canary:dashboard' %}"
               class="max-w-md mx-auto bg-lc-800 shadow-md rounded-md px-8 pt-6 pb-8 mb-4">
             {% csrf_token %}
             <input type="hidden" name="user_id" value="{{ user.id }}">
             <button type="submit"
                     class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-orange-800 hover:text-lc-700 focus:shadow-outline transition duration-150 ease-in-out">
-                Return to Join
+                Return to Dashboard
             </button>
         </form>
     </div>
