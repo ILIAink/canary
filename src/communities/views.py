@@ -11,10 +11,31 @@ from .models import Community, CommunityMember, Report, UploadedFile, InviteLink
 from django.urls import reverse
 from .forms import InviteForm
 
-# Create your views here.
+
+# helper method to ensure user is able to view the community/report they are trying to access
+# silently redirects to their user dashboard if not
+def check_user_access(request, page_type, level='member', community_id=None, report_id=None):
+    if not request.user.is_authenticated:
+        return False
+
+    if page_type == 'community':
+        community = get_object_or_404(Community, pk=community_id)
+        if not CommunityMember.objects.filter(community=community, member=request.user).exists():
+            return False
+    elif page_type == 'report':
+        community = get_object_or_404(Community, pk=community_id)
+        report = get_object_or_404(Report, pk=report_id)
+        if not CommunityMember.objects.filter(community=community, member=request.user, is_admin=True).exists()\
+                and not report.author == request.user:
+            return False
+
+    if level == 'admin':
+        if not CommunityMember.objects.filter(community=community, member=request.user, is_admin=True).exists():
+            return False
+
+    return True
 
 def create_community(request):
-    # TODO connect to the community creation form
     return render(request, 'community/create_community.html')
 
 
@@ -24,22 +45,27 @@ def admin_community_home(request):
     return render(request, 'dashboard/dashboard_community_admin.html')
 
 def community_dashboard(request, community_id):
+
+    # make sure the user is logged in and is a community member
+    if not request.user.is_authenticated:
+        return render(request, 'account/login.html')
+
+    if not check_user_access(request, 'community', community_id=community_id):
+        return HttpResponseRedirect(reverse("canary:dashboard"))
+
     # get the community object
     community = get_object_or_404(Community, pk=community_id)
 
     # get the community members
     members = CommunityMember.objects.filter(community=community)
 
-    # log in the user if not already logged in
-    if not request.user.is_authenticated:
-        return render(request, 'account/login.html')
-
-    # if the user is not a member of the community, redirect to their user dashboard
-    if not CommunityMember.objects.filter(community=community, member=request.user).exists():
-        return HttpResponseRedirect(reverse("canary:dashboard"))
-
-    # get the reports submitted to the community
-    reports = community.reports.all()
+    is_admin = False
+    # get the reports submitted to the community if admin, else only get reports submitted by the user
+    if CommunityMember.objects.get(community=community, member=request.user).is_admin:
+        reports = community.reports.all()
+        is_admin = True
+    else:
+        reports = Report.objects.filter(community=community, author=request.user)
 
     # TODO is this ever used?
     if request.method == 'POST':
@@ -52,8 +78,9 @@ def community_dashboard(request, community_id):
     else:
         form = InviteForm()
 
-    return render(request, 'community/community_dashboard.html', {'community': community, 'members': members, 'reports': reports})
+    return render(request, 'community/community_dashboard.html', {'community': community, 'members': members, 'reports': reports, 'is_admin': is_admin})
 
+# TODO delete this (deprecated)
 # community membership control
 def join_a_community(request):
   return render(request, 'community/join_a_community.html')
@@ -85,6 +112,13 @@ def join_community_by_invite(request, token):
     except InviteLink.DoesNotExist:
         return redirect('communities:join_community_error', error_type='invalid_link')  # Redirect to error page if invite link does not exist
 def generate_invite_link(request, community_id):
+
+    # make sure the user is logged in and is a community admin
+    if not request.user.is_authenticated:
+        return render(request, 'account/login.html')
+
+    if not check_user_access(request, 'community', community_id=community_id, level='admin'):
+        return HttpResponseRedirect(reverse("canary:dashboard"))
 
     # get properties from request
     body = json.loads(request.body)
@@ -133,24 +167,26 @@ def join_success(request):
     return render(request, 'community/join_success.html')
 
 def community_members(request, community_id):
+
+    # make sure the user is logged in and has access to the community
+    if not request.user.is_authenticated:
+        return render(request, 'account/login.html')
+
+    if not check_user_access(request, 'community', community_id=community_id):
+        return HttpResponseRedirect(reverse("canary:dashboard"))
+
     # Get the community object or return 404 if not found
     community = get_object_or_404(Community, id=community_id)
     # Retrieve community members for the specified community
     community_member = CommunityMember.objects.filter(community=community)
 
     # get the permission level of the current user
-    user = get_user_model().objects.get(id=request.user.id)
-    try:
-        user_member = CommunityMember.objects.get(community=community, member=user)
-    except CommunityMember.DoesNotExist:
-        return HttpResponseRedirect(reverse("canary:dashboard"))
+    user_member = CommunityMember.objects.get(community=community, member=request.user)
 
     user_role = 'owner' if user_member.is_owner else 'admin' if user_member.is_admin else 'member'
 
     # can the user remove members?
     can_remove = user_member.is_owner or user_member.is_admin
-
-    print(user_role, can_remove)
 
     # Pass the community_members data to the template
     return render(request, 'community/community_members.html', {'community_id': community_id, 'community_member': community_member, 'user_role': user_role, 'can_remove': can_remove})
@@ -163,6 +199,9 @@ def save_community(request):
     description = request.POST.get('description')
     community = Community(name=name, description=description)
 
+    # if the user is not logged in, redirect to the site home page
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("canary:")) # TODO is this the right syntax
 
     # Save the community to the database
     community.save()
@@ -196,7 +235,12 @@ def create_anonymous_report(request, token):
         invite_link.used_count += 1
         invite_link.save()
 
-        # TODO if a user is logged in when they use the link, their report is not anonymous (it should be)
+        if request.user.is_authenticated:
+            # if the user is logged in, log them out
+            messages.info(request, 'You are already logged in. Please log out to submit an anonymous report.')
+            # TODO once we have a custom logout page, pass the context through so the user can still submit
+            return render(request, 'account/logout.html')
+
         return render(request, 'report/create_report.html', {'community_id': community.id})
     else:
         # delete the expired invite link
@@ -239,6 +283,14 @@ def save_report(request, community_id):
 
 
 def view_report(request, community_id, report_id):
+
+    # make sure the user is logged in and can view the report
+    if not request.user.is_authenticated:
+        return render(request, 'account/login.html')
+
+    if not check_user_access(request, 'report', community_id=community_id, report_id=report_id):
+        return HttpResponseRedirect(reverse("canary:dashboard"))
+
     # get the report object
     report = get_object_or_404(Report, pk=report_id)
 
@@ -259,6 +311,14 @@ def view_report(request, community_id, report_id):
     return render(request, 'report/view_report.html', {'report': report, 'media': media, 'community': community, 'is_admin': is_admin})
 
 def edit_report(request, community_id, report_id):
+
+    # make sure the user is logged in and is a community admin
+    if not request.user.is_authenticated:
+        return render(request, 'account/login.html')
+
+    if not check_user_access(request, 'community', community_id=community_id, level='admin'):
+        return HttpResponseRedirect(reverse("canary:dashboard"))
+
     # get the report object
     report = get_object_or_404(Report, pk=report_id)
 
@@ -276,6 +336,14 @@ def edit_report(request, community_id, report_id):
     return HttpResponseRedirect(reverse("communities:view_report", args=[community_id, report_id]))
 
 def delete_report(request, community_id, report_id):
+
+    # make sure the user is logged in and is an admin of the community
+    if not request.user.is_authenticated:
+        return render(request, 'account/login.html')
+
+    if not check_user_access(request, 'community', community_id=community_id, level='admin'):
+        return HttpResponseRedirect(reverse("canary:dashboard"))
+
     # get the report object
     report = get_object_or_404(Report, pk=report_id)
 
@@ -317,6 +385,14 @@ def join_community(request):
 
 
 def change_admin_status(request, community_id, member_id):
+
+    # make sure the user is logged in and is a community admin
+    if not request.user.is_authenticated:
+        return render(request, 'account/login.html')
+
+    if not check_user_access(request, 'community', community_id=community_id, level='admin'):
+        return HttpResponseRedirect(reverse("canary:dashboard"))
+
     # Find the CommunityMember object to be modified
     community = get_object_or_404(Community, id=community_id)
     user = get_user_model().objects.get(id=member_id)
@@ -329,6 +405,14 @@ def change_admin_status(request, community_id, member_id):
     return HttpResponseRedirect(reverse("communities:community_members", args=[community_id,]))
 
 def remove_member(request, community_id, member_id):
+
+    # make sure the user is logged in and is a community admin
+    if not request.user.is_authenticated:
+        return render(request, 'account/login.html')
+
+    if not check_user_access(request, 'community', community_id=community_id, level='admin'):
+        return HttpResponseRedirect(reverse("canary:dashboard"))
+
     # Find the CommunityMember object to be removed
     community = get_object_or_404(Community, id=community_id)
     user = get_user_model().objects.get(id=member_id)
