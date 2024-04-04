@@ -1,6 +1,7 @@
 import json
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.utils import timezone
 
@@ -44,12 +45,10 @@ def create_community(request):
 def admin_community_home(request):
     return render(request, 'dashboard/dashboard_community_admin.html')
 
+@login_required
 def community_dashboard(request, community_id):
 
-    # make sure the user is logged in and is a community member
-    if not request.user.is_authenticated:
-        return render(request, 'account/login.html')
-
+    # make sure the user is a community member
     if not check_user_access(request, 'community', community_id=community_id):
         return HttpResponseRedirect(reverse("canary:dashboard"))
 
@@ -97,12 +96,15 @@ def join_community_by_invite(request, token):
             return redirect('communities:join_community_error', error_type='invalid_link')  # Redirect to error page for expired or invalid link
     except InviteLink.DoesNotExist:
         return redirect('communities:join_community_error', error_type='invalid_link')  # Redirect to error page if invite link does not exist
+
+
 def generate_invite_link(request, community_id):
 
-    # make sure the user is logged in and is a community admin
+    # if the user is not logged in, redirect to the site home page
     if not request.user.is_authenticated:
-        return render(request, 'account/login.html')
+        return HttpResponseRedirect(reverse("canary:"))
 
+    # make sure the user is a community admin
     if not check_user_access(request, 'community', community_id=community_id, level='admin'):
         return HttpResponseRedirect(reverse("canary:dashboard"))
 
@@ -152,12 +154,10 @@ def join_community_error(request, error_type):
 def join_success(request):
     return render(request, 'community/join_success.html')
 
+@login_required
 def community_members(request, community_id):
 
-    # make sure the user is logged in and has access to the community
-    if not request.user.is_authenticated:
-        return render(request, 'account/login.html')
-
+    # make sure the user has access to the community
     if not check_user_access(request, 'community', community_id=community_id):
         return HttpResponseRedirect(reverse("canary:dashboard"))
 
@@ -268,12 +268,10 @@ def save_report(request, community_id):
     return HttpResponseRedirect(reverse("communities:dashboard", args=[community_id,]))
 
 
+@login_required
 def view_report(request, community_id, report_id):
 
-    # make sure the user is logged in and can view the report
-    if not request.user.is_authenticated:
-        return render(request, 'account/login.html')
-
+    # make sure the user can view the report
     if not check_user_access(request, 'report', community_id=community_id, report_id=report_id):
         return HttpResponseRedirect(reverse("canary:dashboard"))
 
@@ -296,12 +294,10 @@ def view_report(request, community_id, report_id):
     
     return render(request, 'report/view_report.html', {'report': report, 'media': media, 'community': community, 'is_admin': is_admin})
 
+@login_required
 def edit_report(request, community_id, report_id):
 
-    # make sure the user is logged in and is a community admin
-    if not request.user.is_authenticated:
-        return render(request, 'account/login.html')
-
+    # make sure the user is a community admin
     if not check_user_access(request, 'community', community_id=community_id, level='admin'):
         return HttpResponseRedirect(reverse("canary:dashboard"))
 
@@ -321,12 +317,10 @@ def edit_report(request, community_id, report_id):
     # send the user back to the report view
     return HttpResponseRedirect(reverse("communities:view_report", args=[community_id, report_id]))
 
+@login_required
 def delete_report(request, community_id, report_id):
 
-    # make sure the user is logged in and is an admin of the community
-    if not request.user.is_authenticated:
-        return render(request, 'account/login.html')
-
+    # make sure the user is an admin of the community
     if not check_user_access(request, 'community', community_id=community_id, level='admin'):
         return HttpResponseRedirect(reverse("canary:dashboard"))
 
@@ -340,13 +334,10 @@ def delete_report(request, community_id, report_id):
 
 
 
-
+@login_required
 def change_admin_status(request, community_id, member_id):
 
-    # make sure the user is logged in and is a community admin
-    if not request.user.is_authenticated:
-        return render(request, 'account/login.html')
-
+    # make sure the user is a community admin
     if not check_user_access(request, 'community', community_id=community_id, level='admin'):
         return HttpResponseRedirect(reverse("canary:dashboard"))
 
@@ -361,12 +352,10 @@ def change_admin_status(request, community_id, member_id):
     community_member.save()
     return HttpResponseRedirect(reverse("communities:community_members", args=[community_id,]))
 
+@login_required
 def remove_member(request, community_id, member_id):
 
-    # make sure the user is logged in and is a community admin
-    if not request.user.is_authenticated:
-        return render(request, 'account/login.html')
-
+    # make sure the user is a community admin
     if not check_user_access(request, 'community', community_id=community_id, level='admin'):
         return HttpResponseRedirect(reverse("canary:dashboard"))
 
