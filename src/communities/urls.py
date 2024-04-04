@@ -9,10 +9,8 @@ urlpatterns = [
     re_path(r"^(?P<community_id>[0-9a-f-]+)/dashboard/$", views.community_dashboard, name="dashboard"),
 
     # community joining / leaving
-    path("join_a_community/", views.join_a_community, name="join_a_community"),
     path("join_community_error/<str:error_type>/", views.join_community_error, name="join_community_error"),
     path("join_success/", views.join_success, name="join_success"),
-    path("join_community", views.join_community, name="join_community"),
 
     # special url for invite links
     re_path(r"^generate_invite/(?P<community_id>[0-9a-f-]+)/$", views.generate_invite_link, name="generate_invite"),
