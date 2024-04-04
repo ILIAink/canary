@@ -67,23 +67,9 @@ def community_dashboard(request, community_id):
     else:
         reports = Report.objects.filter(community=community, author=request.user)
 
-    # TODO is this ever used?
-    if request.method == 'POST':
-        form = InviteForm(request.POST)
-        if form.is_valid():
-            expiration = form.cleaned_data['expiration']
-            # Generate invite link logic goes here
-            messages.success(request, 'Invite link created successfully.')  # You can use Django messages framework
-            return redirect('communities:dashboard', community_id=community_id)
-    else:
-        form = InviteForm()
 
     return render(request, 'community/community_dashboard.html', {'community': community, 'members': members, 'reports': reports, 'is_admin': is_admin})
 
-# TODO delete this (deprecated)
-# community membership control
-def join_a_community(request):
-  return render(request, 'community/join_a_community.html')
 
 def join_community_by_invite(request, token):
     try:
@@ -352,36 +338,7 @@ def delete_report(request, community_id, report_id):
     # send the user back to the community dashboard
     return HttpResponseRedirect(reverse("communities:dashboard", args=[community_id,]))
 
-# TODO delete this (deprecated)
-def join_community(request):
-    if request.method == 'POST':
-        community_name = request.POST.get('name', None)
-        password = request.POST.get('password', None)
 
-        if community_name is not None and password is not None:
-            try:
-                # Search for the community by name
-                community = Community.objects.get(name=community_name)
-
-                # Check if the provided password matches the community password
-                if community.password == password:
-                    # Password matches, perform further actions here
-                    # For example, you might redirect to a page displaying community details
-                    member = CommunityMember(community=community, is_admin=0, member=request.user)
-                    member.save()
-                    return HttpResponseRedirect("join_success")
-                else:
-                    # Password does not match
-                    return HttpResponseRedirect("join_community_error")
-            except Community.DoesNotExist:
-                # Community with given name does not exist
-                return HttpResponseRedirect("join_community_error")
-        else:
-            # Invalid POST data
-            return HttpResponseRedirect("join_community_error")
-    else:
-        # GET request, render a form to search for the community
-        return HttpResponseRedirect("join_community_error")
 
 
 def change_admin_status(request, community_id, member_id):
