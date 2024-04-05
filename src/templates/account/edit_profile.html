@@ -12,6 +12,7 @@
                        class="shadow appearance-none border rounded w-full py-2 px-3 text-white bg-lc-700 leading-tight focus:outline-none focus:shadow-outline"
                        id="username"
                        name="username"
+                       value= "{{ username }}"
                        required>
             </div>
             <div class="mb-4">
@@ -20,6 +21,7 @@
                        class="shadow appearance-none border rounded w-full py-2 px-3 text-white bg-lc-700 leading-tight focus:outline-none focus:shadow-outline"
                        id="first_name"
                        name="first_name"
+                       value="{{ first_name }}"
                        required>
             </div>
             <div class="mb-4">
@@ -28,6 +30,7 @@
                        class="shadow appearance-none border rounded w-full py-2 px-3 text-white bg-lc-700 leading-tight focus:outline-none focus:shadow-outline"
                        id="last_name"
                        name="last_name"
+                       value="{{ last_name }}"
                        required>
             </div>
             <input type="hidden" name="user_id" value="{{ user.id }}">

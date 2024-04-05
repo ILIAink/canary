@@ -9,7 +9,11 @@ from django.contrib import messages
 # Create your views here.
 
 def edit_profile(request):
-    return render(request, 'account/edit_profile.html')
+    user = User.objects.get(id=request.user.id)
+    username = user.username
+    first_name = user.first_name
+    last_name = user.last_name
+    return render(request, 'account/edit_profile.html', {'username': username, 'first_name': first_name, 'last_name': last_name})
 # save user info edits
 def save_profile(request):
     user = User.objects.get(id=request.user.id)
