@@ -2,75 +2,73 @@
 {% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>
-            {% block title %}Canary{% endblock %}
-        </title>
-        <link href="{% static 'output.css' %}" rel="stylesheet" />
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css"
-              rel="stylesheet">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.js"
-                defer></script>
-    </head>
-    <body class="bg-gray-900 min-h-screen min-w-full text-gray-300">
-        <header>
-            <nav class="bg-gray-800">
-                <div class="flex m-auto h-[50px] w-full items-center justify-between px-6 md:flex max-w-[1200px]">
-                    <div class="hidden md:flex">
-                        {% if user.is_authenticated %}
-                            <a class="text-orange-500 text-lg font-semibold"
-                               href="{% url 'canary:dashboard' %}">Canary</a>
-                        {% else %}
-                            <a class="text-orange-500 text-lg font-semibold" href="/">Canary</a>
-                        {% endif %}
-                    </div>
-                    <div class="flex gap-4">
-                        {% if user.is_authenticated %}
-                            <div x-data="{ open: false }" class="relative">
-                                <button @click="open = !open"
-                                        class="flex items-center focus:outline-none text-gray-300">
-                                    {{ user.username }}
-                                    <svg fill="none"
-                                         stroke="currentColor"
-                                         class="w-4 h-4 ml-2"
-                                         viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                    </svg>
-                                </button>
-                                <div x-show="open"
-                                     @click.away="open = false"
-                                     class="absolute right-0 mt-2 py-2 w-48 bg-gray-700 rounded-md shadow-xl z-20">
-                                    <a href="{% url 'account_email' %}"
-                                       class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 hover:text-gray-100">{% trans "Change Email" %}</a>
-                                    <a href="{% url 'account_logout' %}"
-                                       class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 hover:text-gray-100">{% trans "Sign Out" %}</a>
-                                </div>
-                            </div>
-                        {% else %}
-                            <a href="{% url 'account_login' %}"
-                               class="text-gray-300 px-4 py-2 hover:bg-orange-500 rounded">Login</a>
-                            <a href="{% url 'account_signup' %}"
-                               class="text-gray-300 px-4 py-2 hover:bg-orange-500 rounded">Sign up</a>
-                            <a href="{% url 'account_reset_password' %}"
-                               class="text-gray-300 px-4 py-2 hover:bg-orange-500 rounded">Forgot Password</a>
-                        {% endif %}
-                    </div>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title %}Canary{% endblock %}
+    </title>
+    <link href="{% static 'output.css' %}" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/index.min.css" rel="stylesheet">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.js" defer></script>
+</head>
+
+<body class="bg-gray-900 min-h-screen min-w-full text-color">
+    <header>
+        <nav class="bg-gray-800">
+            <div class="display-none m-auto h-[50px] w-full items-center justify-between px-6 md:flex max-w-[1200px]">
+                <div class="hidden md:flex">
+                    {% if user.is_authenticated %}
+                    <a class="text-orange-800 text-lg font-semibold" href="{% url 'canary:dashboard' %}">Canary</a>
+                    {% else %}
+                    <a class="text-orange-800 text-lg font-semibold" href="/">Canary</a>
+                    {% endif %}
                 </div>
-            </nav>
-        </header>
-        <div class="bg-gray-900 mx-auto w-full grow p-4 md:max-w-[888px] md:p-6 lg:max-w-screen-xl">
-            {% block body %}
-                {% if messages %}
-    {% for message in messages %}
-        <div class="toast border-t border-b border-blue-500 text-blue-500 px-4 py-3 bg-blue-50 animate-slideIn
-                    rounded-lg shadow-lg max-w-lg mx-auto mt-5"
-             role="alert" data-toast-id="{{ forloop.counter }}">
+                <div class="flex gap-4">
+                    {% if user.is_authenticated %}
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open" class="flex items-center focus:outline-none text-text-color">
+                            {{ user.username }}
+                            <svg fill="none" stroke="currentColor" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" @click.away="open = false"
+                            class="absolute right-0 mt-2 py-2 w-48 bg-lc-900 rounded-md shadow-xl z-20">
+                            <a href="{% url 'account_email' %}"
+                                class="block px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-gray-600">{%
+                                trans "Change Email" %}</a>
+                            <a href="{% url 'account_logout' %}"
+                                class="block px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-gray-600">{%
+                                trans "Sign Out" %}</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a href="{% url 'account_login' %}"
+                        class="text-text-color px-4 py-2 hover:bg-orange-400 rounded">Login</a>
+                    <a href="{% url 'account_signup' %}"
+                        class="text-text-color px-4 py-2 hover:bg-orange-400 rounded">Sign up</a>
+                    <a href="{% url 'account_reset_password' %}"
+                        class="text-text-color px-4 py-2 hover:bg-orange-400 rounded">Forgot Password</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="bg-gray-900 mx-auto w-full grow p-4 md:max-w-[888px] md:p-6 lg:max-w-screen-xl">
+        {% block body %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="toast border-t border-b border-blue-500 text-blue-700 px-4 py-3 bg-blue-50 animate-slideIn
+                    rounded-lg shadow-lg max-w-lg mx-auto mt-5" role="alert" data-toast-id="{{ forloop.counter }}">
             <div class="flex justify-between items-center">
                 <strong class="font-bold">{% trans "Messages:" %}</strong>
-                <button type="button" class="toast-close text-blue-500" data-toast-id="{{ forloop.counter }}">
+                <button type="button" class="toast-close text-blue-700" data-toast-id="{{ forloop.counter }}">
                     <span class="text-2xl">&times;</span>
                 </button>
             </div>
@@ -78,30 +76,31 @@
                 <li>{{ message }}</li>
             </ul>
         </div>
-    {% endfor %}
-{% endif %}
-                {% block content %}
-                {% endblock content %}
-                {% block scripts %}
-                {% endblock scripts %}
-            {% endblock body %}
-            {% block extra_body %}
-            {% endblock extra_body %}
-        </div>
-        <script src="{% static 'tw-elements/js/tw-elements.umd.min.js' %}"
-                type="text/javascript"></script>
-        <script>
-    document.addEventListener('DOMContentLoaded', (event) => {
-        document.querySelectorAll('.toast-close').forEach(button => {
-            button.addEventListener('click', function(e) {
-                const toastId = this.getAttribute('data-toast-id');
-                const toastElement = document.querySelector(`[data-toast-id="${toastId}"]`);
-                if (toastElement) {
-                    toastElement.style.display = 'none';
-                }
-            });
-        });
-    });
-        </script>
-    </body>
+        {% endfor %}
+        {% endif %}
+        {% block content %}
+        {% endblock content %}
+        {% block scripts %}
+        {% endblock scripts %}
+        {% endblock body %}
+        {% block extra_body %}
+        {% endblock extra_body %}
+    </div>
+    <script src="{% static 'tw-elements/js/tw-elements.umd.min.js' %}" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tw-elements/dist/js/index.min.js"></script>
+    <script>
+        document.addEventListener( 'DOMContentLoaded', ( event ) => {
+            document.querySelectorAll( '.toast-close' ).forEach( button => {
+                button.addEventListener( 'click', function ( e ) {
+                    const toastId = this.getAttribute( 'data-toast-id' );
+                    const toastElement = document.querySelector( `[data-toast-id="${toastId}"]` );
+                    if ( toastElement ) {
+                        toastElement.style.display = 'none';
+                    }
+                } );
+            } );
+        } );
+    </script>
+</body>
+
 </html>
