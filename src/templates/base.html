@@ -45,6 +45,8 @@
                                      class="absolute right-0 mt-2 py-2 w-48 bg-lc-900 rounded-md shadow-xl z-20">
                                     <a href="{% url 'account_email' %}"
                                        class="block px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-gray-600">{% trans "Change Email" %}</a>
+                                    <a href="{% url 'accounts:edit_profile' %}"
+                                       class="block px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-gray-600">{% trans "Edit Profile" %}</a>
                                     <a href="{% url 'account_logout' %}"
                                        class="block px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-gray-600">{% trans "Sign Out" %}</a>
                                 </div>
