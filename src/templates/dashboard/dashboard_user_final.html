@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mx-auto mt-5">
+    <div class="flex justify-center">
+        <div class="w-full max-w-3xl">
+            <h2 class="mb-2 text-xl text-center text-white">User Dashboard</h2>
+
+            {% if both_empty %}
+            <p class="pb-4 text-center text-white"> You are not in any communities :( </p>
+            {% endif %}
+
+            <!-- outer box  -->
+            <div class="bg-lc-900 shadow-md rounded px-8 pt-6 pb-8 mb-4">
+
+                <div class="w-auto h-auto mx-auto flex justify-around">
+                    <div class="mt-5">
+                        <form method="post" action="{% url 'communities:create_community' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <button type="submit"
+                                class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-primary-green hover:text-lc-700 focus:shadow-outline transition duration-150 ease-in-out">
+                                Create Community
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                {% if not both_empty %}
+                <div class="mb-2 pt-6 text-m text-center text-white">Your communities</div>
+                {% endif %}
+
+                <div class="grid grid-cols-2">
+                    <!-- Column 1 -->
+                    <div class="p-4">
+                        {% if admin_communities %}
+                        <div class="bg-lc-700 shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                            <div class="card-body text-white">
+                                <p>{{ "Admin" }}</p>
+                            </div>
+                            {% if admin_communities %}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                {% for community_member in admin_communities %}
+                                <div class="bg-lc-700 border border-gray-600 rounded-lg p-4 text-white">
+                                    <h2>{{ community_member.community.name }}</h2>
+                                    <p>{{ community.description }}</p>
+                                    <a href="{% url 'communities:dashboard' community_member.community.id %}"
+                                        class="text-xs text-blue-500 hover:text-blue-800">View community</a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <!-- Column 2 -->
+                    <div class="p-4">
+                        {% if user_communities %}
+                        <div class="bg-lc-700 shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                            <div class="card-body text-white">
+                                <p>{{ "Member" }}</p>
+                            </div>
+                            {% if user_communities %}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                {% for community_member in user_communities %}
+                                <div class="bg-lc-700 border border-gray-600 rounded-lg p-4 text-white">
+                                    <h2>{{ community_member.community.name }}</h2>
+                                    <p>{{ community.description }}</p>
+                                    <a href="{% url 'communities:dashboard' community_member.community.id %}"
+                                        class="text-blue-500 hover:text-blue-800">View community</a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- outerbox end -->
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
