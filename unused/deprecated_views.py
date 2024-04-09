@@ -1,3 +1,10 @@
+from django.http import HttpResponseRedirect
+
+from django.apps import apps
+Community = apps.get_model('communities', 'Community')
+Community_Member = apps.get_model('communities', 'CommunityMember')
+
+
 
 def join_community(request):
     if request.method == 'POST':

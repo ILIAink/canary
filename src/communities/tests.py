@@ -1,4 +1,5 @@
 from django.http import HttpRequest
+from django.http import HttpResponseRedirect
 from django.test import TestCase
 from django.urls import reverse
 from django.apps import AppConfig
@@ -6,6 +7,7 @@ from django.apps import apps
 from .models import *
 #from accounts.models import User
 from .views import *
+from django.contrib.messages.storage.fallback import FallbackStorage
 
 
 class CommunityTests(TestCase):
@@ -61,6 +63,9 @@ class CommunityTests(TestCase):
     request.method = 'POST'
     request.POST = {'title': 'test_report', 'content': 'this is a report', 'resolution_method': 'Canary'}
     request.user = testUser
+    setattr(request, 'session', 'session')
+    messages = FallbackStorage(request)
+    setattr(request, '_messages', messages)
 
     test_community = Community(name="test_community", description="report bad code")
     test_community.save()
