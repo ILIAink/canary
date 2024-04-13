@@ -31,6 +31,7 @@ def check_user_access(request, page_type, level='member', community_id=None, rep
             return False
 
     if level == 'admin':
+        community = get_object_or_404(Community, pk=community_id)
         if not CommunityMember.objects.filter(community=community, member=request.user, is_admin=True).exists():
             return False
 
@@ -38,6 +39,29 @@ def check_user_access(request, page_type, level='member', community_id=None, rep
 
 def create_community(request):
     return render(request, 'community/create_community.html')
+
+
+def edit_community_redirect(request):
+
+    access_perms = check_user_access(request, page_type='blah', level='admin', community_id=request.POST.get('community_id'))
+    if not access_perms:
+        return redirect('communities:dashboard', community_id=request.POST.get('community_id'))
+    else:
+        return render(request, 'community/edit_community.html', context={'community_id': request.POST.get('community_id')})
+
+    #is_admin = request.POST.get('is_admin')
+    #if is_admin == 'false':
+        #return render(request, 'community/edit_community.html')
+
+def edit_community(request):
+    community = get_object_or_404(Community, pk=request.POST.get('community_id'))
+    new_description = request.POST.get('community_description')
+    new_name = request.POST.get('community_name')
+    community.description = new_description
+    community.name = new_name
+    community.updated_at = timezone.now()
+    community.save()
+    return redirect('communities:dashboard', community_id=request.POST.get('community_id'))
 
 
 # Admin home view - displays the home view for the admin of a community
