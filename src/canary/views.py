@@ -30,3 +30,61 @@ def dashboard(request):
    else:
        # Handle the case when the user is not authenticated, perhaps redirect to login page
        return render(request, 'account/login.html')
+
+
+# notifications
+def notifications(request):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("canary:"))
+    
+    notifs = Notification.objects.filter(recipient=request.user)
+    notif_dict = {}
+
+    for notif in notifs:
+        notif_dict[notif]=notif.is_viewed
+        if notif.is_viewed == False:
+            notif.is_viewed=True
+            notif.save()
+    
+    notif_dict = dict(reversed(list(notif_dict.items())))
+    
+    return render(request, 'notifications.html', {'notifications': notif_dict})
+
+def delete_notification(request):
+    notif_id = request.POST.get('notif_id')
+    notification = get_object_or_404(Notification, pk=notif_id)
+    notification.delete()
+    
+    return HttpResponseRedirect(reverse("canary:notifications"))
+
+
+def clear_all_notifications(request):
+    Notification.objects.filter(recipient=request.user).all().delete()
+    
+    return HttpResponseRedirect(reverse("canary:notifications"))
+
+def create_notif(recipient_id, report_id, community_id, content):
+    recipient = get_object_or_404(User, pk=recipient_id)
+    report = get_object_or_404(Report, pk=report_id)
+    community = get_object_or_404(Community, pk=community_id)
+    notification = Notification(recipient=recipient, report=report, community=community, content=content)
+
+    notification.save()
+
+# function called when new report is created to notify admins and owner
+def new_report_notif(recipient_id, report_id, community_id):
+    community = get_object_or_404(Community, pk=community_id)
+    report = get_object_or_404(Report, pk=report_id)
+    content = "New Report in {}: \"{}\"".format(community.name, report.title)
+    create_notif(recipient_id=recipient_id, report_id = report_id, community_id=community_id, content=content)
+
+# function called when report status is updated to notify reporter
+def report_update_notif(recipient_id, report_id, community_id):
+    community = get_object_or_404(Community, pk=community_id)
+    report = get_object_or_404(Report, pk=report_id)
+    content = "Report \"{}\" has been updated in {}".format(report.title, community.name)
+    create_notif(recipient_id=recipient_id, report_id = report_id, community_id=community_id, content=content)
+
+
+
+
