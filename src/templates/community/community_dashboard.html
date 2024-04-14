@@ -90,14 +90,14 @@
             </div>
             <div class="bg-gray-700 rounded-lg p-4">
                 <!-- Enhanced Community Information with Dropdown or More Interactivity -->
-                <div class="bg-gray-700 rounded-lg p-4 relative">
+                <div class="bg-gray-700 rounded-lg p-4 relative" x-data="{ isOpen: false }">
                     <div class="flex justify-between items-center">
                         <h2 class="text-2xl font-bold text-gray-100 mb-4">Community Information</h2>
                         <!-- Dropdown Trigger Button -->
                         <div class="dropdown inline-block relative">
                             <button
-                                class="bg-orange-500 text-white p-2 rounded hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition duration-150 ease-in-out dropdown-toggle"
-                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                class="bg-orange-500 text-white p-2 rounded hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition duration-150 ease-in-out"
+                                @click="isOpen = !isOpen">
                                 More Actions
                                 <svg class="w-4 h-4 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -106,14 +106,15 @@
                                 </svg>
                             </button>
                             <!-- Dropdown Menu -->
-                            <ul class="dropdown-menu absolute hidden text-gray-700 pt-1">
-                                <li><a class="rounded-t bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap"
-                                        href="#" onclick="openAnonPopup()">Create Anonymous Submission Link</a></li>
-                                <li><a class="bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap" href="#"
-                                        onclick="openInvitePopup()">Invite Members</a></li>
-                                <li><a class="rounded-b bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap"
-                                        href="#">Edit Community</a></li>
-                            </ul>
+                            <div class="absolute right-0 mt-2 py-2 w-48 bg-gray-200 rounded-md shadow-xl z-20"
+                                x-show="isOpen" x-transition>
+                                <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
+                                    onclick="openAnonPopup()">Create Anonymous Submission Link</a>
+                                <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
+                                    onclick="openInvitePopup()">Invite Members</a>
+                                <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#">Edit
+                                    Community</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -216,12 +217,6 @@
             .catch( error => {
                 console.error( 'Error:', error );
             } );
-    } );
-</script>
-<script>
-    document.addEventListener( 'DOMContentLoaded', ( event ) => {
-        // Initialization for tw-elements
-        window.twInit();
     } );
 </script>
 
