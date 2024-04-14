@@ -1559,8 +1559,16 @@ html.dark{
   --tw-gradient-to: #ec4899 var(--tw-gradient-to-position);
 }
 
+.bg-cover{
+  background-size: cover;
+}
+
 .bg-clip-padding{
   background-clip: padding-box;
+}
+
+.bg-center{
+  background-position: center;
 }
 
 .p-2{
