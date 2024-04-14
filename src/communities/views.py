@@ -10,7 +10,7 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from .models import Community, CommunityMember, Report, UploadedFile, InviteLink
 from django.urls import reverse
-from .forms import InviteForm
+from canary.views import new_report_notif, report_update_notif
 
 
 # helper method to ensure user is able to view the community/report they are trying to access
@@ -265,6 +265,17 @@ def save_report(request, community_id):
 
     # go back to the community dashboard (url pattern: community/<int:community_id>/dashboard/)
     messages.success(request, 'Report submitted!')
+    
+    # send notif to community admins and owner
+    owner = CommunityMember.objects.filter(community=community, is_owner=True)
+    admins = CommunityMember.objects.filter(community=community, is_admin=True)
+
+    owner_and_admins = owner | admins
+
+    for recipient in owner_and_admins:
+        recipient_id = recipient.member.id
+        new_report_notif(recipient_id=recipient_id, report_id=report.id, community_id=community_id)
+
     return HttpResponseRedirect(reverse("communities:dashboard", args=[community_id,]))
 
 
@@ -313,6 +324,10 @@ def edit_report(request, community_id, report_id):
         report.notes = notes
 
     report.save()
+
+    # send notif to reporter
+    recipient_id = report.author.id
+    report_update_notif(recipient_id=recipient_id, report_id=report_id, community_id=community_id)
 
     # send the user back to the report view
     return HttpResponseRedirect(reverse("communities:view_report", args=[community_id, report_id]))
