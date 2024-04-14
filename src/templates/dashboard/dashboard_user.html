@@ -18,7 +18,7 @@
                             {% csrf_token %}
                             <input type="hidden" name="user_id" value="{{ user.id }}">
                             <button type="submit"
-                                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out">
+                                class="bg-indigo-400 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out">
                                 Create Community
                             </button>
                         </form>
@@ -27,11 +27,12 @@
                     {% if user_communities %}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                         {% for community_member in user_communities %}
-                        <div class="bg-gray-700 border border-gray-600 rounded-lg p-4 text-white hover:bg-gray-600 transition duration-150 ease-in-out">
+                        <div
+                            class="bg-gray-700 border border-gray-600 rounded-lg p-4 text-white hover:bg-gray-600 transition duration-150 ease-in-out">
                             <h3 class="text-xl">{{ community_member.community.name }}</h3>
                             <p class="mt-1">{{ community.description }}</p>
                             <a href="{% url 'communities:dashboard' community_member.community.id %}"
-                               class="inline-block mt-4 text-blue-400 hover:text-blue-300">
+                                class="inline-block mt-4 text-blue-400 hover:text-blue-300">
                                 View community
                             </a>
                         </div>
