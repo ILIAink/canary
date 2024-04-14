@@ -1,5 +1,9 @@
-from django.shortcuts import render
-from communities.models import Community, CommunityMember
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
+from accounts.models import User
+from canary.models import Notification
+from communities.models import Community, CommunityMember, Report
 
 
 # Create your views here.
@@ -18,6 +22,14 @@ def login(request):
 # dashboard view - displays the user's dashboard
 def dashboard(request):
    if request.user.is_authenticated:
+       notifications = Notification.objects.filter(recipient=request.user, is_viewed=False)
+       if len(notifications) <= 0:
+           num_notifications = ""
+       elif 0 < len(notifications) < 9:
+           num_notifications = len(notifications)
+       else:
+           num_notifications = "9+"
+            
        user_communities = CommunityMember.objects.filter(member=request.user, is_admin=False)
        admin_communities = CommunityMember.objects.filter(member=request.user, is_admin=True)
        both_empty = False
@@ -26,7 +38,7 @@ def dashboard(request):
        if False:#request.user.is_staff:  # Check if the user is an administrator
            return render(request, 'dashboard/dashboard_admin.html', {'user': request.user, 'user_communities': user_communities})
        else:
-           return render(request, 'dashboard/dashboard_user_final.html', {'user': request.user, 'user_communities': user_communities, "admin_communities": admin_communities, 'both_empty': both_empty})
+           return render(request, 'dashboard/dashboard_user_final.html', {'user': request.user, 'user_communities': user_communities, "admin_communities": admin_communities, 'both_empty': both_empty, 'num_notifications': num_notifications})
    else:
        # Handle the case when the user is not authenticated, perhaps redirect to login page
        return render(request, 'account/login.html')
