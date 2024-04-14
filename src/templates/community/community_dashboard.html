@@ -90,7 +90,7 @@
             </div>
             <div class="bg-gray-700 rounded-lg p-4">
                 <!-- Enhanced Community Information with Dropdown or More Interactivity -->
-                <div class="bg-gray-700 rounded-lg p-4 relative" x-data="{ isOpen: false }">
+                <div class="bg-gray-700 rounded-lg py-4 relative" x-data="{ isOpen: false }">
                     <div class="flex justify-between items-center">
                         <h2 class="text-2xl font-bold text-gray-100 mb-4">Community Information</h2>
                         <!-- Dropdown Trigger Button -->
@@ -226,7 +226,7 @@
         toggleButton.addEventListener( 'click', function () {
             toggleDropdown();
         } );
-        
+
         // Close the dropdown when clicking on any dropdown item
         dropdownMenu.querySelectorAll( 'a' ).forEach( item => {
             item.addEventListener( 'click', function () {

@@ -1176,6 +1176,10 @@ html.dark{
   justify-content: space-between;
 }
 
+.justify-around{
+  justify-content: space-around;
+}
+
 .gap-2{
   gap: 0.5rem;
 }
@@ -1665,6 +1669,11 @@ html.dark{
 .py-\[0\.4rem\]{
   padding-top: 0.4rem;
   padding-bottom: 0.4rem;
+}
+
+.py-4{
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .pb-8{
