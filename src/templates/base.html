@@ -29,6 +29,16 @@
                     </div>
                     <div class="flex gap-4">
                         {% if user.is_authenticated %}
+                            <a href="{% url 'canary:notifications'%}">
+                                <strong class="relative inline-flex items-center rounded border hover:bg-orange-400 px-2.5 py-1.5 text-xs font-medium">
+                                    {% if num_notifications %}
+                                        <span class="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-600 text-white flex justify-center items-center items">
+                                            <span>{{ num_notifications }}</span>
+                                        </span>
+                                    {% endif %}
+                                    <span class="text-white text-md"> Activity </span>
+                                </strong>
+                            </a>
                             <div x-data="{ open: false }" class="relative">
                                 <button @click="open = !open"
                                         class="flex items-center focus:outline-none text-text-color">
