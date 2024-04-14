@@ -23,20 +23,46 @@
                             </button>
                         </form>
                     </div>
-                    <!-- User Communities -->
-                    {% if user_communities %}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                        {% for community_member in user_communities %}
-                        <div
-                            class="bg-gray-700 border border-gray-600 rounded-lg p-4 text-white hover:bg-gray-600 transition duration-150 ease-in-out">
-                            <h3 class="text-xl">{{ community_member.community.name }}</h3>
-                            <p class="mt-1">{{ community.description }}</p>
-                            <a href="{% url 'communities:dashboard' community_member.community.id %}"
-                                class="inline-block mt-4 text-blue-400 hover:text-blue-300">
-                                View community
-                            </a>
+                    {% if admin_communities or user_communities %}
+                    <div class="mt-6">
+                        {% if admin_communities %}
+                        <div class="bg-gray-700 rounded-lg p-4 mb-4">
+                            <h3 class="text-xl font-semibold mb-2 text-white">Admin Communities</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {% for community_member in admin_communities %}
+                                <div
+                                    class="bg-gray-600 border border-gray-500 rounded-lg p-4 text-white hover:bg-gray-500 transition duration-150 ease-in-out">
+                                    <h4 class="text-lg">{{ community_member.community.name }}</h4>
+                                    <a href="{% url 'communities:dashboard' community_member.community.id %}"
+                                        class="inline-block mt-2 text-blue-400 hover:text-blue-300">
+                                        View community
+                                    </a>
+                                </div>
+                                {% endfor %}
+                            </div>
                         </div>
-                        {% endfor %}
+                        {% endif %}
+                        {% if user_communities %}
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <h3 class="text-xl font-semibold mb-2 text-white">Member Communities</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {% for community_member in user_communities %}
+                                <div
+                                    class="bg-gray-600 border border-gray-500 rounded-lg p-4 text-white hover:bg-gray-500 transition duration-150 ease-in-out">
+                                    <h4 class="text-lg">{{ community_member.community.name }}</h4>
+                                    <a href="{% url 'communities:dashboard' community_member.community.id %}"
+                                        class="inline-block mt-2 text-blue-400 hover:text-blue-300">
+                                        View community
+                                    </a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <div class="mt-6 text-center text-gray-400">
+                        You are not a member of any communities.
                     </div>
                     {% endif %}
                 </div>
@@ -44,4 +70,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock %}  
