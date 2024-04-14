@@ -63,6 +63,12 @@ def edit_community(request):
     community.save()
     return redirect('communities:dashboard', community_id=request.POST.get('community_id'))
 
+def leave_community(request):
+    community = get_object_or_404(Community, pk=request.POST.get('community_id'))
+    user_id = request.POST.get('user_id')
+    CommunityMember.objects.filter(community=community, member=user_id).delete()
+    return redirect('canary:dashboard')
+
 
 # Admin home view - displays the home view for the admin of a community
 # TODO do we want to re-implement this, or use a single dashboard view for all users?

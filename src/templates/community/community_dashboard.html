@@ -122,9 +122,35 @@
             <input type="hidden" name="user_id" value="{{ user.id }}">
             <button type="submit" class="btn btn-primary">See All Members</button>
         </form>
+        <button onclick="openLeavePopup()" class="pt=6 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+            Leave Community
+        </button>
     </div>
+
+    <div id="leave_popup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+        <div class="bg-white rounded-lg w-1/2 p-6">
+            <h2 class="text-xl text-center font-semibold mb-4">Are you sure you want to leave this community?</h2>
+
+            <form method="post" action="{% url "communities:leave_community" %}">
+                {% csrf_token %}
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                <input type="hidden" name="community_id" value="{{ community.id }}">
+
+                <div class="flex justify-center items-center mt-2">
+                    <button onclick="closeLeavePopup()" type="submit" class="mr-4 pt=6 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+                        Yes, leave community
+                    </button>
+                    <button onclick="closeLeavePopup()" type="button" class="pt=6 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                        No, go back
+                    </button>
+                </div>
+            </form>
+        </div><
+    </div>
+
+
 <!-- Anonymous Link Popup -->
-<div id="anonymousPopup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+    <div id="anonymousPopup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
         <div class="bg-white rounded-lg w-1/2 p-6">
             <h2 class="text-xl font-semibold mb-4">Create Invite Link</h2>
             <form id="anonymousForm" method="post">
@@ -192,6 +218,14 @@
         function closeAnonPopup() {
             document.getElementById('anonymousPopup').classList.add('hidden');
         }
+
+        function openLeavePopup(){
+            document.getElementById('leave_popup').classList.remove('hidden')
+        }
+        function closeLeavePopup(){
+            document.getElementById("leave_popup").classList.add('hidden')
+        }
+
     </script>
     <script>
         // Function to copy invite link to clipboard

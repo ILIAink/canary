@@ -9,6 +9,8 @@ urlpatterns = [
     path("edit_community/", views.edit_community_redirect, name="edit_community_redirect"),
     path("edit_community/submit", views.edit_community, name='edit_community'),
 
+    path("leave_community/", views.leave_community, name="leave_community"),
+
     re_path(r"^(?P<community_id>[0-9a-f-]+)/dashboard/$", views.community_dashboard, name="dashboard"),
 
     # community joining / leaving
