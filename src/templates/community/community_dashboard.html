@@ -109,15 +109,17 @@
                             <div class="absolute right-0 mt-2 py-2 w-48 bg-gray-200 rounded-md shadow-xl z-20"
                                 x-show="isOpen" x-transition>
                                 <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
-                                    onclick="openAnonPopup()">Create Anonymous Submission Link</a>
+                                    onclick="openAnonPopup(); isOpen = false">Create Anonymous Submission Link</a>
                                 <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
-                                    onclick="openInvitePopup()">Invite Members</a>
-                                <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#">Edit
-                                    Community</a>
+                                    onclick="openInvitePopup(); isOpen = false">Invite Members</a>
+                                <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
+                                    onclick="isOpen = false">Edit Community</a>
                             </div>
                         </div>
                     </div>
                 </div>
+
+
 
                 <div class="bg-gray-600 rounded-lg p-4">
                     <h5 class="text-lg font-semibold text-gray-100 mb-2">
@@ -135,19 +137,24 @@
         </div>
     </div>
 </div>
-<!-- Invite Members Popup -->
-<div id="invitePopup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
-    <div class="bg-white rounded-lg w-1/2 p-6">
-        <h2 class="text-xl font-semibold mb-4">Create Invite Link</h2>
-        <form id="inviteForm" method="post">
+
+<!-- Anonymous Submission Popup -->
+<div id="anonymousPopup" class="fixed inset-0 bg-gray-400 bg-opacity-10 flex items-center justify-center hidden">
+    <div
+        class="bg-white rounded-lg max-w-lg w-full mx-auto p-8 space-y-6 shadow-xl transition-transform transform scale-95">
+        <h2 class="text-2xl font-semibold text-gray-800">Create Anonymous Submission Link</h2>
+        <form id="anonymousForm" class="space-y-4">
             {% csrf_token %}
-            <div class="mb-4 justify-center items-center">
-                <label for="num_invites" class="block text-sm font-medium text-gray-700">Max Number of Uses (Enter 0 for
-                    No Limit)</label>
-                <input type="number" name="num_invites" id="num_invites" class="mb-4 bg-gray-300" value="0">
-                <label for="expiration" class="block text-sm font-medium text-gray-700">Expiration:</label>
-                <select name="expiration" id="expiration"
-                    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+            <div>
+                <label for="num_submissions" class="text-sm font-medium text-gray-700">Maximum Number of Submissions (0
+                    for unlimited):</label>
+                <input type="number" name="num_submissions" id="num_submissions"
+                    class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label for="anon_expiration" class="text-sm font-medium text-gray-700">Expiration:</label>
+                <select id="anon_expiration" name="anon_expiration"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     <option value="1h">1 Hour</option>
                     <option value="1d">1 Day</option>
                     <option value="1w">1 Week</option>
@@ -155,26 +162,101 @@
                     <option value="never">Never</option>
                 </select>
             </div>
-            <div class="flex justify-end mt-2">
-                <button onclick="closeInvitePopup()" type="submit"
-                    class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Generate
+            <div class="flex justify-end space-x-2">
+                <button type="button" onclick="closeAnonPopup()"
+                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 focus:outline-none">Cancel</button>
+                <button type="submit"
+                    class="px-4 py-2 bg-blue-500 text-black hover:text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Generate
                     Link</button>
-                <button onclick="closeInvitePopup()"
-                    class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Cancel</button>
             </div>
         </form>
     </div>
 </div>
-{% endblock %}
 
+<!-- Invite Members Popup -->
+<div id="invitePopup" class="fixed inset-0 bg-gray-400 bg-opacity-10 flex items-center justify-center hidden">
+    <div
+        class="bg-white rounded-lg max-w-lg w-full mx-auto p-8 space-y-6 shadow-xl transition-transform transform scale-95">
+        <h2 class="text-2xl font-semibold text-gray-800">Create Invite Link</h2>
+        <form id="inviteForm" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label for="num_invites" class="text-sm font-medium text-gray-700">Maximum Number of Uses (0 for
+                    unlimited):</label>
+                <input type="number" name="num_invites" id="num_invites"
+                    class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label for="expiration" class="text-sm font-medium text-gray-700">Expiration:</label>
+                <select id="expiration" name="expiration"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <option value="1h">1 Hour</option>
+                    <option value="1d">1 Day</option>
+                    <option value="1w">1 Week</option>
+                    <option value="1m">1 Month</option>
+                    <option value="never">Never</option>
+                </select>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" onclick="closeInvitePopup()"
+                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 focus:outline-none">Cancel</button>
+                <button type="submit"
+                    class="px-4 py-2 bg-blue-500 text-black hover:text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Generate
+                    Link</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
 {% block scripts %}
 <script>
+    document.addEventListener( 'DOMContentLoaded', function () {
+        // Access the button that toggles the dropdown
+        const toggleButton = document.querySelector( '.dropdown button' );
+        const dropdownMenu = document.querySelector( '.dropdown div' );
+
+        // Function to toggle dropdown open/close
+        function toggleDropdown() {
+            const isOpen = dropdownMenu.style.display === 'block';
+            dropdownMenu.style.display = isOpen ? 'none' : 'block';
+        }
+
+        // Event listener for the dropdown toggle button
+        toggleButton.addEventListener( 'click', function () {
+            toggleDropdown();
+        } );
+        
+        // Close the dropdown when clicking on any dropdown item
+        dropdownMenu.querySelectorAll( 'a' ).forEach( item => {
+            item.addEventListener( 'click', function () {
+                dropdownMenu.style.display = 'none'; // Forcefully hide the dropdown
+            } );
+        } );
+
+        // Optional: Close the dropdown by clicking outside of it
+        document.addEventListener( 'click', function ( event ) {
+            if ( !toggleButton.contains( event.target ) && !dropdownMenu.contains( event.target ) ) {
+                dropdownMenu.style.display = 'none'; // Hide the dropdown if click outside of dropdown
+            }
+        } );
+    } );
+
+
     function openInvitePopup() {
         document.getElementById( 'invitePopup' ).classList.remove( 'hidden' );
     }
 
     function closeInvitePopup() {
         document.getElementById( 'invitePopup' ).classList.add( 'hidden' );
+    }
+
+    function openAnonPopup() {
+        document.getElementById( 'anonymousPopup' ).classList.remove( 'hidden' );
+    }
+
+    function closeAnonPopup() {
+        document.getElementById( 'anonymousPopup' ).classList.add( 'hidden' );
     }
 
     // Function to copy invite link to clipboard
@@ -213,11 +295,58 @@
                 data.invite_link = window.location.origin + data.invite_link;
                 copyToClipboard( data.invite_link );
                 alert( 'Invite link copied to clipboard!' );
+                // Close the dropdown menu
+                closeDropdownMenu();
             } )
             .catch( error => {
                 console.error( 'Error:', error );
             } );
     } );
-</script>
 
+    document.getElementById( 'anonymousForm' ).addEventListener( 'submit', function ( e ) {
+        e.preventDefault();
+        const numSubmissions = document.getElementById( 'num_submissions' ).value;
+        const expiration = document.getElementById( 'anon_expiration' ).value;
+        fetch( "{% url 'communities:generate_invite' community.id %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify( {
+                num_invites: numSubmissions,
+                expiration: expiration,
+                link_type: 'anon'
+            } )
+        } )
+            .then( response => response.json() )
+            .then( data => {
+                // append invite link to domain
+                data.sub_link = window.location.origin + data.invite_link;
+                copyToClipboard( data.sub_link );
+                alert( 'Submission link copied to clipboard!' );
+                // Close the dropdown menu
+                closeDropdownMenu();
+            } )
+            .catch( error => {
+                console.error( 'Error:', error );
+            } );
+    } );
+
+    // Function to close the dropdown menu
+    function closeDropdownMenu() {
+        const dropdownMenu = document.querySelector( '.dropdown-menu' );
+        dropdownMenu.classList.add( 'hidden' );
+    }
+
+    // Close the dropdown menu when clicking outside
+    document.addEventListener( 'click', function ( event ) {
+        const dropdownMenu = document.querySelector( '.dropdown-menu' );
+        const dropdownButton = document.querySelector( '.dropdown-toggle' );
+
+        if ( !dropdownButton.contains( event.target ) && !dropdownMenu.contains( event.target ) ) {
+            closeDropdownMenu();
+        }
+    } );
+</script>
 {% endblock %}
