@@ -9,6 +9,7 @@
     <title>
         {% block title %}Canary{% endblock %}
     </title>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/canary.svg' %}">
     <link href="{% static 'output.css' %}" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/index.min.css" rel="stylesheet">
@@ -23,12 +24,14 @@
     <header>
         <nav class="bg-gray-800">
             <div class="display-none m-auto h-[50px] w-full items-center justify-between px-6 md:flex max-w-[1200px]">
-                <div class="hidden md:flex">
+                <div class="hidden md:flex items-center gap-2">
+                    <img src="{% static 'images/canary.svg' %}" alt="Canary Logo" width="30" height="30">
                     {% if user.is_authenticated %}
                     <a class="text-orange-800 text-lg font-semibold" href="{% url 'canary:dashboard' %}">Canary</a>
                     {% else %}
                     <a class="text-orange-800 text-lg font-semibold" href="/">Canary</a>
                     {% endif %}
+
                 </div>
                 <div class="flex gap-4">
                     {% if user.is_authenticated %}
