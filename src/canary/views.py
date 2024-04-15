@@ -1,7 +1,9 @@
-from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
 from accounts.models import User
 from canary.models import Notification
 from communities.models import Community, CommunityMember, Report
+from django.urls import reverse
 
 
 # Create your views here.

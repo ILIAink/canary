@@ -17,7 +17,7 @@
         <div class="flex justify-between">
             <div>
                 <div class="flex justify-between">
-                    <a href="{% url 'communities:dashboard' notif.community.id %}">{{ notif.content }}</a>
+                    <a class="text-white" href="{% url 'communities:dashboard' notif.community.id %}">{{ notif.content }}</a>
 
                     <form method="post" action="{% url 'canary:delete_notification' %}">
                         {% csrf_token %}
@@ -35,7 +35,7 @@
             </div>
         </div>
         {% empty %}
-            <a>No notifications</a>
+            <a class="text-white">No notifications</a>
         {% endfor %}
     </div>
 </div>
