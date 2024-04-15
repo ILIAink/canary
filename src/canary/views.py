@@ -35,10 +35,8 @@ def dashboard(request):
        both_empty = False
        if(not(user_communities) and not(admin_communities)):
             both_empty = True
-       if False:#request.user.is_staff:  # Check if the user is an administrator
-           return render(request, 'dashboard/dashboard_admin.html', {'user': request.user, 'user_communities': user_communities})
-       else:
-           return render(request, 'dashboard/dashboard_user_final.html', {'user': request.user, 'user_communities': user_communities, "admin_communities": admin_communities, 'both_empty': both_empty, 'num_notifications': num_notifications})
+
+       return render(request, 'dashboard/dashboard_user_final.html', {'user': request.user, 'user_communities': user_communities, "admin_communities": admin_communities, 'both_empty': both_empty, 'num_notifications': num_notifications})
    else:
        # Handle the case when the user is not authenticated, perhaps redirect to login page
        return render(request, 'account/login.html')
@@ -91,10 +89,17 @@ def new_report_notif(recipient_id, report_id, community_id):
     create_notif(recipient_id=recipient_id, report_id = report_id, community_id=community_id, content=content)
 
 # function called when report status is updated to notify reporter
-def report_update_notif(recipient_id, report_id, community_id):
+def report_status_notif(recipient_id, report_id, community_id):
     community = get_object_or_404(Community, pk=community_id)
     report = get_object_or_404(Report, pk=report_id)
-    content = "Report \"{}\" has been updated in {}".format(report.title, community.name)
+    content = "Report \"{}\" in {} has been marked as {}".format(report.title, community.name, report.get_status_display())
+    create_notif(recipient_id=recipient_id, report_id = report_id, community_id=community_id, content=content)
+
+# function called when an admin adds notes to a report to notify reporter
+def report_notes_notif(recipient_id, report_id, community_id):
+    community = get_object_or_404(Community, pk=community_id)
+    report = get_object_or_404(Report, pk=report_id)
+    content = "An admin has responded to your report \"{}\" in {}".format(report.title, community.name)
     create_notif(recipient_id=recipient_id, report_id = report_id, community_id=community_id, content=content)
 
 

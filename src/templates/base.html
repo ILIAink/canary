@@ -31,9 +31,9 @@
                         {% if user.is_authenticated %}
                             <a href="{% url 'canary:notifications'%}">
                                 <strong class="relative inline-flex items-center rounded border hover:bg-orange-400 px-2.5 py-1.5 text-xs font-medium">
-                                    {% if num_notifications %}
+                                    {% if notifications_count > 0 %}
                                         <span class="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-600 text-white flex justify-center items-center items">
-                                            <span>{{ num_notifications }}</span>
+                                            <span>{{ notifications_count }}</span>
                                         </span>
                                     {% endif %}
                                     <span class="text-white text-md"> Activity </span>

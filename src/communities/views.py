@@ -301,6 +301,8 @@ def view_report(request, community_id, report_id):
 
         if is_admin and report.status == 'NEW':
             report.status = 'INP'
+            if report.author is not None:
+                report_update_notif(recipient_id=report.author.id, report_id=report_id, community_id=community_id)
             report.save()
     
     return render(request, 'report/view_report.html', {'report': report, 'media': media, 'community': community, 'is_admin': is_admin})
@@ -326,8 +328,9 @@ def edit_report(request, community_id, report_id):
     report.save()
 
     # send notif to reporter
-    recipient_id = report.author.id
-    report_update_notif(recipient_id=recipient_id, report_id=report_id, community_id=community_id)
+    if report.author is not None:
+        recipient_id = report.author.id
+        report_update_notif(recipient_id=recipient_id, report_id=report_id, community_id=community_id)
 
     # send the user back to the report view
     return HttpResponseRedirect(reverse("communities:view_report", args=[community_id, report_id]))
