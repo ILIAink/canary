@@ -10,7 +10,7 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from .models import Community, CommunityMember, Report, UploadedFile, InviteLink
 from django.urls import reverse
-from canary.views import new_report_notif, report_update_notif
+from canary.views import new_report_notif, report_status_notif, report_notes_notif
 
 
 # helper method to ensure user is able to view the community/report they are trying to access
@@ -302,7 +302,7 @@ def view_report(request, community_id, report_id):
         if is_admin and report.status == 'NEW':
             report.status = 'INP'
             if report.author is not None:
-                report_update_notif(recipient_id=report.author.id, report_id=report_id, community_id=community_id)
+                report_status_notif(recipient_id=report.author.id, report_id=report_id, community_id=community_id)
             report.save()
     
     return render(request, 'report/view_report.html', {'report': report, 'media': media, 'community': community, 'is_admin': is_admin})
@@ -330,7 +330,10 @@ def edit_report(request, community_id, report_id):
     # send notif to reporter
     if report.author is not None:
         recipient_id = report.author.id
-        report_update_notif(recipient_id=recipient_id, report_id=report_id, community_id=community_id)
+        if status:
+            report_status_notif(recipient_id=recipient_id, report_id=report_id, community_id=community_id)
+        if notes:
+            report_notes_notif(recipient_id=recipient_id, report_id=report_id, community_id=community_id)
 
     # send the user back to the report view
     return HttpResponseRedirect(reverse("communities:view_report", args=[community_id, report_id]))
