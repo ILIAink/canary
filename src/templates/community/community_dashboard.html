@@ -1,114 +1,150 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-    <div class="container mx-auto mt-8">
-        <h1 class="text-3xl font-bold text-center text-white mb-8">{{ community.name }}</h1>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="p-3 border border-gray-600 rounded-lg md:col-span-1">
-                <div class="flex justify-between">
-                    <h2 class="text-2xl font-semibold text-primary-red mb-4">
-                        {% if is_admin %}
-                            Community Reports
+<div class="bg-gray-900 mt-4 flex items-center justify-center">
+    <div
+        class="w-full max-w-5xl bg-gray-800 shadow-md rounded-lg overflow-hidden grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+        <div class="col-span-1 bg-gray-700 rounded-lg p-4">
+            <div class="mb-2 flex justify-between">
+                <h2 class="text-2xl font-bold text-gray-100">
+                    Community Members
+                </h2>
+                {% if is_admin %}
+                <a href="{% url 'communities:community_members' community.id %}"
+                    class="inline-flex items-center justify-center bg-orange-500 text-white p-2 rounded hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-gear" viewBox="0 0 16 16">
+                        <path
+                            d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0" />
+                        <path
+                            d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z" />
+                    </svg>
+                </a>
+                {% endif %}
+            </div>
+            <ul class="divide-y divide-gray-600">
+                {% for member in members %}
+                <li
+                    class="py-3 px-2 text-gray-300 hover:bg-gray-600 hover:text-white transition-colors rounded-md flex justify-between items-center">
+                    <div>
+                        {{ member.member.username }}
+                        {% if member.member.email == user.email %}
+                        (You)
+                        {% endif %}
+                    </div>
+                    <div>
+                        {% if member.is_owner %}
+                        <span class="bg-red-500 text-white text-xs font-semibold px-2.5 py-0.5 rounded">Owner</span>
+                        {% elif member.is_admin %}
+                        <span class="bg-blue-500 text-white text-xs font-semibold px-2.5 py-0.5 rounded">Admin</span>
                         {% else %}
-                            Your Reports
+                        <span class="bg-gray-500 text-white text-xs font-semibold px-2.5 py-0.5 rounded">Member</span>
+                        {% endif %}
+                        {% if can_remove and not member.is_admin %}
+                        <form method="post" action="{% url 'communities:remove_member' community_id member.member.id %}"
+                            enctype="multipart/form-data" class="inline-block">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <button type="submit"
+                                class="bg-red-600 text-white text-sm py-1 px-4 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-150 ease-in-out">Remove</button>
+                        </form>
+                        {% endif %}
+                        {% if user_role == 'owner' %}
+                        <form method="post"
+                            action="{% url 'communities:change_admin_status' community_id member.member.id %}"
+                            enctype="multipart/form-data" class="inline-block">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            {% if member.is_admin %}
+                            <button type="submit"
+                                class="bg-yellow-500 text-white text-sm py-1 px-4 rounded hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition duration-150 ease-in-out mx-2">Demote</button>
+                            {% else %}
+                            <button type="submit"
+                                class="bg-green-500 text-white text-sm py-1 px-4 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition duration-150 ease-in-out mx-2">Promote</button>
+                            {% endif %}
+                        </form>
+                        {% endif %}
+                    </div>
+                </li>
+                {% empty %}
+                <li class="py-3 text-gray-300">No members in this community yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-span-2 grid grid-rows-2 gap-6">
+            <div class="bg-gray-700 rounded-lg p-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-gray-100">
+                        {% if is_admin %}
+                        Community Reports
+                        {% else %}
+                        Your Reports
                         {% endif %}
                     </h2>
                     <a href="{% url 'communities:create_report' community.id %}"
-                       class="inline-flex items-center justify-center bg-lc-orange text-white p-2 rounded mb-4 hover:bg-gray-500 transition-colors">
-                        <svg class="w-5 h-5 mr-2"
-                             fill="none"
-                             stroke="currentColor"
-                             viewBox="0 0 24 24"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z">
-                            </path>
+                        class="inline-flex items-center justify-center bg-orange-500 text-white p-2 rounded hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         Create Report
                     </a>
                 </div>
-                <ul class="divide-y divide-lc-med-dark">
+                <ul class="divide-y divide-gray-600">
                     {% for report in reports %}
-                        <li class="py-4">
-                            <a href="{% url 'communities:view_report' community.id report.id %}"
-                               class="text-lc-bright hover:text-lc-orange transition-colors">{{ report.title }}</a>
-                            <span class="float-right text-lc-bright">{{ report.get_status_display }}</span>
-                        </li>
+                    <li
+                        class="py-3 px-2 mt-1 text-gray-300 hover:bg-gray-600 hover:text-white transition-colors rounded-md">
+                        <a href="{% url 'communities:view_report' community.id report.id %}"
+                            class="text-gray-300 hover:text-white transition-colors">{{ report.title }}</a>
+                        <span class="float-right text-gray-300">{{ report.get_status_display }}</span>
+                    </li>
                     {% empty %}
-                        <li class="py-4 text-lc-bright">No reports submitted to this community.</li>
+                    <li class="py-3 text-gray-300">No reports submitted to this community.</li>
                     {% endfor %}
                 </ul>
             </div>
-
-            <div class="p-3 border border-gray-600 rounded-lg">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-orange-800 text-2xl font-semibold mb-4">Community Information</h2>
-                    <button onclick="openAnonPopup()"
-                            class="inline-flex items-center justify-center bg-lc-orange text-white p-2 rounded mb-4 hover:bg-gray-500 transition-colors">
-                        <svg class="w-5 h-5 mr-2"
-                             fill="none"
-                             stroke="currentColor"
-                             viewBox="0 0 24 24"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                            </path>
-                        </svg>
-                        Create Anonymous Submission Link
-                    </button>
-                    <button onclick="openInvitePopup()"
-                            class="inline-flex items-center justify-center bg-lc-orange text-white p-2 rounded mb-4 hover:bg-gray-500 transition-colors">
-                        <svg class="w-5 h-5 mr-2"
-                             fill="none"
-                             stroke="currentColor"
-                             viewBox="0 0 24 24"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                            </path>
-                        </svg>
-                        Invite Members
-                    </button>
-
-                    <form method="post" action="{% url 'communities:edit_community_redirect' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="admin_status" value="{{ is_admin }}">
-                        <input type="hidden" name="community_id" value="{{ community.id }}">
-                        <button type="submit"
-                                class="inline-flex items-center justify-center bg-lc-orange text-white p-2 rounded mb-4 hover:bg-gray-500 transition-colors">
-                            <svg class="w-5 h-5 mr-2"
-                             fill="none"
-                             stroke="currentColor"
-                             viewBox="0 0 24 24"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                            </path>
-                        </svg>
-                        Edit Community
-                        </button>
-                    </form>
-
-
-                    <!-- <a href={% url 'communities:edit_community_redirect' %}
-                       class="inline-flex items-center justify-center bg-lc-orange text-white p-2 rounded mb-4 hover:bg-gray-500 transition-colors">
-                        <svg class="w-5 h-5 mr-2"
-                             fill="none"
-                             stroke="currentColor"
-                             viewBox="0 0 24 24"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                            </path>
-                        </svg>
-                        Edit Community
-                    </a>
-                    -->
-
+            <div class="bg-gray-700 rounded-lg p-4">
+                <!-- Enhanced Community Information with Dropdown or More Interactivity -->
+                <div class="bg-gray-700 rounded-lg py-4 relative" x-data="{ isOpen: false }">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-bold text-gray-100">Community Information</h2>
+                        <!-- Dropdown Trigger Button -->
+                        <div class="dropdown inline-block relative">
+                            <button
+                                class="bg-orange-500 text-white p-2 rounded hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition duration-150 ease-in-out"
+                                @click="isOpen = !isOpen">
+                                More Actions
+                                <svg class="w-4 h-4 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <!-- Dropdown Menu -->
+                            <div class="absolute right-0 mt-2 py-2 w-48 bg-gray-200 rounded-md shadow-xl z-20"
+                                x-show="isOpen" x-transition>
+                                <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
+                                    onclick="openAnonPopup(); isOpen = false">Create Anonymous Submission Link</a>
+                                <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
+                                    onclick="openInvitePopup(); isOpen = false">Invite Members</a>
+                                <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
+                                    onclick="isOpen = false">Edit Community</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-lc-med-dark rounded-lg">
-                    <h5 class="text-lg font-semibold text-white mb-2">
+
+
+
+                <div class="bg-gray-600 rounded-lg p-4">
+                    <h5 class="text-lg font-semibold text-gray-100 mb-2">
                         <strong>Name:</strong> {{ community.name }}
                     </h5>
-                    <p class="text-white mb-4">
+                    <p class="text-gray-300 mb-4">
                         <strong>Description:</strong> {{ community.description }}
                     </p>
-                    <div class="text-lc-bright mb-4">
+                    <div class="text-gray-400 mb-4">
                         <p>Created at: {{ community.created_at }}</p>
                         <p>Updated at: {{ community.updated_at }}</p>
                     </div>
@@ -116,185 +152,217 @@
             </div>
         </div>
     </div>
-    <div class="container mt-5">
-        <form method="post" action="{% url 'communities:community_members' community.id %}" enctype="multipart/form-data">
+</div>
+
+<!-- Anonymous Submission Popup -->
+<div id="anonymousPopup" class="fixed inset-0 bg-gray-400 bg-opacity-10 flex items-center justify-center hidden">
+    <div
+        class="bg-white rounded-lg max-w-lg w-full mx-auto p-8 space-y-6 shadow-xl transition-transform transform scale-95">
+        <h2 class="text-2xl font-semibold text-gray-800">Create Anonymous Submission Link</h2>
+        <form id="anonymousForm" class="space-y-4">
             {% csrf_token %}
-            <input type="hidden" name="user_id" value="{{ user.id }}">
-            <button type="submit" class="btn btn-primary">See All Members</button>
+            <div>
+                <label for="num_submissions" class="text-sm font-medium text-gray-700">Maximum Number of Submissions (0
+                    for unlimited):</label>
+                <input type="number" name="num_submissions" id="num_submissions"
+                    class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label for="anon_expiration" class="text-sm font-medium text-gray-700">Expiration:</label>
+                <select id="anon_expiration" name="anon_expiration"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <option value="1h">1 Hour</option>
+                    <option value="1d">1 Day</option>
+                    <option value="1w">1 Week</option>
+                    <option value="1m">1 Month</option>
+                    <option value="never">Never</option>
+                </select>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" onclick="closeAnonPopup()"
+                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 focus:outline-none">Cancel</button>
+                <button type="submit"
+                    class="px-4 py-2 bg-blue-500 text-black hover:text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Generate
+                    Link</button>
+            </div>
         </form>
-        <button onclick="openLeavePopup()" class="pt=6 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
-            Leave Community
-        </button>
     </div>
+</div>
 
-    <div id="leave_popup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
-        <div class="bg-white rounded-lg w-1/2 p-6">
-            <h2 class="text-xl text-center font-semibold mb-4">Are you sure you want to leave this community?</h2>
-
-            <form method="post" action="{% url "communities:leave_community" %}">
-                {% csrf_token %}
-                <input type="hidden" name="user_id" value="{{ user.id }}">
-                <input type="hidden" name="community_id" value="{{ community.id }}">
-
-                <div class="flex justify-center items-center mt-2">
-                    <button onclick="closeLeavePopup()" type="submit" class="mr-4 pt=6 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
-                        Yes, leave community
-                    </button>
-                    <button onclick="closeLeavePopup()" type="button" class="pt=6 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                        No, go back
-                    </button>
-                </div>
-            </form>
-        </div><
-    </div>
-
-
-<!-- Anonymous Link Popup -->
-    <div id="anonymousPopup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
-        <div class="bg-white rounded-lg w-1/2 p-6">
-            <h2 class="text-xl font-semibold mb-4">Create Invite Link</h2>
-            <form id="anonymousForm" method="post">
-                {% csrf_token %}
-                <div class="mb-4 justify-center items-center">
-                    <label for="num_submissions" class="block text-sm font-medium text-gray-700">Max Number of Uses (Enter 0 for No Limit)</label>
-                    <input type="number" name="num_submissions" id="num_submissions" class="mb-4 bg-gray-300" value="0">
-                    <label for="anon_expiration" class="block text-sm font-medium text-gray-700">Expiration:</label>
-                    <select name="expiration" id="anon_expiration" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
-                        <option value="1h">1 Hour</option>
-                        <option value="1d">1 Day</option>
-                        <option value="1w">1 Week</option>
-                        <option value="1m">1 Month</option>
-                        <option value="never">Never</option>
-                    </select>
-                </div>
-                <div class="flex justify-end mt-2">
-                    <button onclick="closeAnonPopup()" type="submit" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Generate Link</button>
-                    <button onclick="closeAnonPopup()" type="button" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Cancel</button>
-                </div>
-            </form>
-        </div>x
-    </div>
 <!-- Invite Members Popup -->
-    <div id="invitePopup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
-        <div class="bg-white rounded-lg w-1/2 p-6">
-            <h2 class="text-xl font-semibold mb-4">Create Invite Link</h2>
-            <form id="inviteForm" method="post">
-                {% csrf_token %}
-                <div class="mb-4 justify-center items-center">
-                    <label for="num_invites" class="block text-sm font-medium text-gray-700">Max Number of Uses (Enter 0 for No Limit)</label>
-                    <input type="number" name="num_invites" id="num_invites" class="mb-4 bg-gray-300" value="0">
-                    <label for="expiration" class="block text-sm font-medium text-gray-700">Expiration:</label>
-                    <select name="expiration" id="expiration" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
-                        <option value="1h">1 Hour</option>
-                        <option value="1d">1 Day</option>
-                        <option value="1w">1 Week</option>
-                        <option value="1m">1 Month</option>
-                        <option value="never">Never</option>
-                    </select>
-                </div>
-                <div class="flex justify-end mt-2">
-                    <button onclick="closeInvitePopup()" type="submit" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Generate Link</button>
-                    <button onclick="closeInvitePopup()" type="button" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Cancel</button>
-                </div>
-            </form>
-        </div>x
+<div id="invitePopup" class="fixed inset-0 bg-gray-400 bg-opacity-10 flex items-center justify-center hidden">
+    <div
+        class="bg-white rounded-lg max-w-lg w-full mx-auto p-8 space-y-6 shadow-xl transition-transform transform scale-95">
+        <h2 class="text-2xl font-semibold text-gray-800">Create Invite Link</h2>
+        <form id="inviteForm" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label for="num_invites" class="text-sm font-medium text-gray-700">Maximum Number of Uses (0 for
+                    unlimited):</label>
+                <input type="number" name="num_invites" id="num_invites"
+                    class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label for="expiration" class="text-sm font-medium text-gray-700">Expiration:</label>
+                <select id="expiration" name="expiration"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <option value="1h">1 Hour</option>
+                    <option value="1d">1 Day</option>
+                    <option value="1w">1 Week</option>
+                    <option value="1m">1 Month</option>
+                    <option value="never">Never</option>
+                </select>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" onclick="closeInvitePopup()"
+                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 focus:outline-none">Cancel</button>
+                <button type="submit"
+                    class="px-4 py-2 bg-blue-500 text-black hover:text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Generate
+                    Link</button>
+            </div>
+        </form>
     </div>
+</div>
+
 {% endblock %}
-
 {% block scripts %}
-    <script>
-        function openInvitePopup() {
-            document.getElementById('invitePopup').classList.remove('hidden');
+<script>
+    document.addEventListener( 'DOMContentLoaded', function () {
+        // Access the button that toggles the dropdown
+        const toggleButton = document.querySelector( '.dropdown button' );
+        const dropdownMenu = document.querySelector( '.dropdown div' );
+
+        // Function to toggle dropdown open/close
+        function toggleDropdown() {
+            const isOpen = dropdownMenu.style.display === 'block';
+            dropdownMenu.style.display = isOpen ? 'none' : 'block';
         }
 
-        function closeInvitePopup() {
-            document.getElementById('invitePopup').classList.add('hidden');
-        }
+        // Event listener for the dropdown toggle button
+        toggleButton.addEventListener( 'click', function () {
+            toggleDropdown();
+        } );
 
-        function openAnonPopup() {
-            document.getElementById('anonymousPopup').classList.remove('hidden');
-        }
+        // Close the dropdown when clicking on any dropdown item
+        dropdownMenu.querySelectorAll( 'a' ).forEach( item => {
+            item.addEventListener( 'click', function () {
+                dropdownMenu.style.display = 'none'; // Forcefully hide the dropdown
+            } );
+        } );
 
-        function closeAnonPopup() {
-            document.getElementById('anonymousPopup').classList.add('hidden');
-        }
+        // Optional: Close the dropdown by clicking outside of it
+        document.addEventListener( 'click', function ( event ) {
+            if ( !toggleButton.contains( event.target ) && !dropdownMenu.contains( event.target ) ) {
+                dropdownMenu.style.display = 'none'; // Hide the dropdown if click outside of dropdown
+            }
+        } );
+    } );
 
-        function openLeavePopup(){
-            document.getElementById('leave_popup').classList.remove('hidden')
-        }
-        function closeLeavePopup(){
-            document.getElementById("leave_popup").classList.add('hidden')
-        }
 
-    </script>
-    <script>
-        // Function to copy invite link to clipboard
-        function copyToClipboard(text) {
-            const input = document.createElement('input');
-            input.style.position = 'fixed';
-            input.style.opacity = 0;
-            input.value = text;
-            document.body.appendChild(input);
-            input.select();
-            document.execCommand('copy');
-            document.body.removeChild(input);
-        }
+    function openInvitePopup() {
+        document.getElementById( 'invitePopup' ).classList.remove( 'hidden' );
+    }
 
-        // Add event listener to form submission for copying invite link to clipboard
-        document.getElementById('inviteForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const numInvites = document.getElementById('num_invites').value;
-            const expiration = document.getElementById('expiration').value;
-            console.log("Fetching invite link with properties: ", numInvites, expiration);
-            fetch("{% url 'communities:generate_invite' community.id %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({
-                    num_invites: numInvites,
-                    expiration: expiration,
-                    link_type: 'join'
-                })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    // append invite link to domain
-                    data.invite_link = window.location.origin + data.invite_link;
-                    copyToClipboard(data.invite_link);
-                    alert('Invite link copied to clipboard!');
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        });
-        document.getElementById('anonymousForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const numInvites = document.getElementById('num_submissions').value;
-            const expiration = document.getElementById('anon_expiration').value;
-            fetch("{% url 'communities:generate_invite' community.id %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({
-                    num_invites: numInvites,
-                    expiration: expiration,
-                    link_type: 'anon'
-                })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    // append invite link to domain
-                    data.sub_link = window.location.origin + data.invite_link;
-                    copyToClipboard(data.sub_link);
-                    alert('Submission link copied to clipboard!');
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        });
-    </script>
+    function closeInvitePopup() {
+        document.getElementById( 'invitePopup' ).classList.add( 'hidden' );
+    }
+
+    function openAnonPopup() {
+        document.getElementById( 'anonymousPopup' ).classList.remove( 'hidden' );
+    }
+
+    function closeAnonPopup() {
+        document.getElementById( 'anonymousPopup' ).classList.add( 'hidden' );
+    }
+
+    // Function to copy invite link to clipboard
+    function copyToClipboard( text ) {
+        const input = document.createElement( 'input' );
+        input.style.position = 'fixed';
+        input.style.opacity = 0;
+        input.value = text;
+        document.body.appendChild( input );
+        input.select();
+        document.execCommand( 'copy' );
+        document.body.removeChild( input );
+    }
+
+    // Add event listener to form submission for copying invite link to clipboard
+    document.getElementById( 'inviteForm' ).addEventListener( 'submit', function ( e ) {
+        e.preventDefault();
+        const numInvites = document.getElementById( 'num_invites' ).value;
+        const expiration = document.getElementById( 'expiration' ).value;
+        console.log( "Fetching invite link with properties: ", numInvites, expiration );
+        fetch( "{% url 'communities:generate_invite' community.id %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify( {
+                num_invites: numInvites,
+                expiration: expiration,
+                link_type: 'join'
+            } )
+        } )
+            .then( response => response.json() )
+            .then( data => {
+                // append invite link to domain
+                data.invite_link = window.location.origin + data.invite_link;
+                copyToClipboard( data.invite_link );
+                alert( 'Invite link copied to clipboard!' );
+                // Close the dropdown menu
+                closeDropdownMenu();
+            } )
+            .catch( error => {
+                console.error( 'Error:', error );
+            } );
+    } );
+
+    document.getElementById( 'anonymousForm' ).addEventListener( 'submit', function ( e ) {
+        e.preventDefault();
+        const numSubmissions = document.getElementById( 'num_submissions' ).value;
+        const expiration = document.getElementById( 'anon_expiration' ).value;
+        fetch( "{% url 'communities:generate_invite' community.id %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify( {
+                num_invites: numSubmissions,
+                expiration: expiration,
+                link_type: 'anon'
+            } )
+        } )
+            .then( response => response.json() )
+            .then( data => {
+                // append invite link to domain
+                data.sub_link = window.location.origin + data.invite_link;
+                copyToClipboard( data.sub_link );
+                alert( 'Submission link copied to clipboard!' );
+                // Close the dropdown menu
+                closeDropdownMenu();
+            } )
+            .catch( error => {
+                console.error( 'Error:', error );
+            } );
+    } );
+
+    // Function to close the dropdown menu
+    function closeDropdownMenu() {
+        const dropdownMenu = document.querySelector( '.dropdown-menu' );
+        dropdownMenu.classList.add( 'hidden' );
+    }
+
+    // Close the dropdown menu when clicking outside
+    document.addEventListener( 'click', function ( event ) {
+        const dropdownMenu = document.querySelector( '.dropdown-menu' );
+        const dropdownButton = document.querySelector( '.dropdown-toggle' );
+
+        if ( !dropdownButton.contains( event.target ) && !dropdownMenu.contains( event.target ) ) {
+            closeDropdownMenu();
+        }
+    } );
+</script>
 {% endblock %}

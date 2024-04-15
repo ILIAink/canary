@@ -1,20 +1,72 @@
 {% extends "base.html" %}
-{% load allauth account %}
-{% load i18n %}
+{% load static %} <!-- Django tag to load static files -->
 {% block content %}
-    <div class="container mx-auto mt-10 text-center">
-        <h1 class="text-4xl font-bold text-gray-100 mb-6">Welcome to Canary</h1>
-        <p class="text-lg text-gray-200 mb-8">
-            Canary is a vibrant community where you get to snitch without getting stitches (here's hoping)
-        </p>
-        <div class="flex justify-center">
-            <a href="{% url 'account_signup' %}"
-               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4">Join Now</a>
-            <a href="{% url 'account_login' %}"
-               class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Log In</a>
-        </div>
-        <p class="text-lg text-gray-200 mb-8">
-            *DISCLAIMER* This is a class project, do not use this for real world situations
-        </p>
+<div class="container mx-auto mt-10 text-center">
+    <div class="bg-red-500 text-white p-4 font-bold text-center">
+        Disclaimer: This is a class project and should not be used for real-world applications.
     </div>
+    <h1 class="text-4xl font-bold text-white mb-4">Welcome to Canary</h1>
+    <p class="text-lg text-gray-200 mb-4">
+        Canary is a vibrant community where you get to snitch without getting stitches (here's hoping).
+    </p>
+    <!-- SVG Container with Tilt and Gradient Glare Effect -->
+    <div id="svg-tilt-container" class="tilt" data-tilt data-tilt-max="25" data-tilt-scale="1.1" data-tilt-speed="400"
+        data-tilt-perspective="500">
+        <img src="{% static 'images/shushing-face-svgrepo-com.svg' %}" alt="Shushing Face" width="200" height="200">
+        <div class="glare-gradient"></div>
+    </div>
+    <div class="flex justify-center mt-8">
+        <a href="{% url 'account_signup' %}"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4">Join Now</a>
+        <a href="{% url 'account_login' %}"
+            class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Log In</a>
+    </div>
+</div>
+<script>
+    document.addEventListener( 'DOMContentLoaded', function () {
+        VanillaTilt.init( document.querySelector( "#svg-tilt-container" ), {
+            max: 25,
+            speed: 400,
+            glare: true,
+            "max-glare": 0.5
+        } );
+    } );
+</script>
+<style>
+    #svg-tilt-container {
+        position: relative;
+        width: 300px;
+        height: 300px;
+        margin: 20px auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transform-style: preserve-3d;
+        transition: ease width 0.3s
+    }
+
+    #svg-tilt-container .glare-gradient {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        mix-blend-mode: overlay;
+        pointer-events: none;
+    }
+
+    #svg-tilt-container:hover {
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        background: linear-gradient(45deg, #667eea, #764ba2, #ff758c);
+        width: 350px;
+
+    }
+
+
+    #svg-tilt-container img {
+        transform: translateZ(20px);
+        z-index: 1;
+    }
+</style>
 {% endblock %}

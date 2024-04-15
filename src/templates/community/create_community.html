@@ -1,32 +1,36 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="container mx-auto mt-8">
-        <form method="post"
-              action="{% url 'communities:save_community' %}"
-              class="max-w-md mx-auto bg-lc-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
-            {% csrf_token %}
-            <h2 class="mb-2 text-xl text-center text-white">Create a Community</h2>
-            <div class="mb-4">
-                <label for="name" class="block text-white font-bold mb-2">Community Name:</label>
-                <input type="text"
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-white bg-lc-700 leading-tight focus:outline-none focus:shadow-outline"
-                       id="name"
-                       name="name"
-                       required>
+<div class="container mx-auto py-10">
+    <div class="flex justify-center">
+        <div class="w-full max-w-2xl">
+            <div class="bg-gray-900 shadow-lg rounded-lg overflow-hidden">
+                <div class="px-8 py-6 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white">
+                    <h2 class="text-3xl font-semibold text-center">Create a Community</h2>
+                    <form method="post" action="{% url 'communities:save_community' %}"
+                        class="bg-lc-200 border border-2 bg-opacity-5 drop-shadow-lg px-8 pt-6 pb-8 mt-4">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="name" class="block text-white font-bold mb-2">Community Name:</label>
+                            <input type="text"
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-white bg-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                id="name" name="name" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="description" class="block text-white font-bold mb-2">Community
+                                Description:</label>
+                            <input type="text"
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-white bg-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                id="description" name="description" required>
+                        </div>
+                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                        <button type="submit"
+                            class="bg-indigo-400 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out">
+                            Submit Community
+                        </button>
+                    </form>
+                </div>
             </div>
-            <div class="mb-4">
-                <label for="description" class="block text-white font-bold mb-2">Community Description:</label>
-                <input type="text"
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-white bg-lc-700 leading-tight focus:outline-none focus:shadow-outline"
-                       id="description"
-                       name="description"
-                       required>
-            </div>
-            <input type="hidden" name="user_id" value="{{ user.id }}">
-            <button type="submit"
-                    class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-primary-green hover:text-lc-700 focus:shadow-outline transition duration-150 ease-in-out">
-                Submit Community
-            </button>
-        </form>
+        </div>
     </div>
+</div>
 {% endblock %}

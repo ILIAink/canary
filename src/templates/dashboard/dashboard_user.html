@@ -1,42 +1,73 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="container mx-auto mt-5">
-        <div class="flex justify-center">
-            <div class="w-full max-w-md">
-                <div class="bg-lc-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                    <h2 class="mb-2 text-xl text-center text-white">User Dashboard</h2>
-                    <div class="card-body text-white">
+<div class="container mx-auto py-10">
+    <div class="flex justify-center">
+        <div class="w-full max-w-2xl">
+            <div class="bg-gray-900 shadow-lg rounded-lg overflow-hidden">
+                <div class="px-8 py-6 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white">
+                    <h2 class="text-3xl font-semibold text-center">User Dashboard</h2>
+                    <div class="mt-4 text-center">
                         <p>Your name: {{ user.first_name }} {{ user.last_name }}</p>
                         <p>Your username: {{ user.username }}</p>
                         <p>Your email: {{ user.email }}</p>
-                        <div class="w-auto h-auto mx-auto flex justify-around">
-                            <div class="mt-5">
-                                <form method="post" action="{% url 'communities:create_community' %}">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="user_id" value="{{ user.id }}">
-                                    <button type="submit"
-                                            class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-primary-green hover:text-lc-700 focus:shadow-outline transition duration-150 ease-in-out">
-                                        Create Community
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                        <!-- User Communities -->
-                        {% if user_communities %}
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                {% for community_member in user_communities %}
-                                    <div class="bg-lc-700 border border-gray-600 rounded-lg p-4 text-white">
-                                        <h2>{{ community_member.community.name }}</h2>
-                                        <p>{{ community.description }}</p>
-                                        <a href="{% url 'communities:dashboard' community_member.community.id %}"
-                                           class="text-blue-500 hover:text-blue-800">View community</a>
-                                    </div>
+                    </div>
+                </div>
+                <div class="bg-gray-800 px-8 pt-6 pb-8">
+                    <div class="flex justify-center mt-4">
+                        <form method="post" action="{% url 'communities:create_community' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <button type="submit"
+                                class="bg-indigo-400 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out">
+                                Create Community
+                            </button>
+                        </form>
+                    </div>
+                    {% if admin_communities or user_communities %}
+                    <div class="mt-6">
+                        {% if admin_communities %}
+                        <div class="bg-gray-700 rounded-lg p-4 mb-4">
+                            <h3 class="text-xl font-semibold mb-2 text-white">Admin Communities</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {% for community_member in admin_communities %}
+                                <div
+                                    class="bg-gray-600 border border-gray-500 rounded-lg p-4 text-white hover:bg-gray-500 transition duration-150 ease-in-out">
+                                    <h4 class="text-lg">{{ community_member.community.name }}</h4>
+                                    <a href="{% url 'communities:dashboard' community_member.community.id %}"
+                                        class="inline-block mt-2 text-blue-400 hover:text-blue-300">
+                                        View community
+                                    </a>
+                                </div>
                                 {% endfor %}
                             </div>
+                        </div>
+                        {% endif %}
+                        {% if user_communities %}
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <h3 class="text-xl font-semibold mb-2 text-white">Member Communities</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {% for community_member in user_communities %}
+                                <div
+                                    class="bg-gray-600 border border-gray-500 rounded-lg p-4 text-white hover:bg-gray-500 transition duration-150 ease-in-out">
+                                    <h4 class="text-lg">{{ community_member.community.name }}</h4>
+                                    <a href="{% url 'communities:dashboard' community_member.community.id %}"
+                                        class="inline-block mt-2 text-blue-400 hover:text-blue-300">
+                                        View community
+                                    </a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
                         {% endif %}
                     </div>
+                    {% else %}
+                    <div class="mt-6 text-center text-gray-400">
+                        You are not a member of any communities.
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
-{% endblock %}
+</div>
+{% endblock %}  
