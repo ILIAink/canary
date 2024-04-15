@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="notifications">
+    <div class="flex justify-between">
+        <a class="text-orange-800 font-bold">Notifications</a>
+        <form method="post" action="{% url 'canary:clear_all_notifications' %}">
+            {% csrf_token %}
+            <button type="submit"
+                class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-primary-green hover:text-lc-700 focus:shadow-outline transition duration-150 ease-in-out">
+                Clear All Notifications
+            </button>
+        </form>
+    </div>
+    <div class="border-y-2 divide-y border-white h-10">
+        {% for notif, is_viewed in notifications.items %}
+        <div class="flex justify-between">
+            <div>
+                <div class="flex justify-between">
+                    <a href="{% url 'communities:dashboard' notif.community.id %}">{{ notif.content }}</a>
+
+                    <form method="post" action="{% url 'canary:delete_notification' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="notif_id" value="{{ notif.id }}">
+                        <button type="submit" class="px-5 hover:text-blue-500">
+                            X
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div>
+                {% if not is_viewed %}
+                    <a class="text-orange-800">New</a>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+            <a>No notifications</a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+
+
+
