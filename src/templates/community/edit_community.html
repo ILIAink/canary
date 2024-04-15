@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="container mx-auto mt-8">
+        <form method="post"
+              action="{% url 'communities:edit_community' %}"
+              class="max-w-md mx-auto bg-lc-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            {% csrf_token %}
+            <h2 class="mb-2 text-xl text-center text-white">Edit Community</h2>
+            <div class="mb-4">
+                <label for="community_name" class="block text-white font-bold mb-2">Name:</label>
+                <input type="text"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-white bg-lc-700 leading-tight focus:outline-none focus:shadow-outline"
+                       id="community_name"
+                       name="community_name"
+                       value= "{{ name }}"
+                       required>
+            </div>
+            <div class="mb-4">
+                <label for="community_description" class="block text-white font-bold mb-2">Description:</label>
+                <input type="text"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-white bg-lc-700 leading-tight focus:outline-none focus:shadow-outline"
+                       id="community_description"
+                       name="community_description"
+                       value="{{ description }}"
+                       required>
+            </div>
+            <!--
+            <div class="mb-4">
+                <label for="last_name" class="block text-white font-bold mb-2">Last Name:</label>
+                <input type="text"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-white bg-lc-700 leading-tight focus:outline-none focus:shadow-outline"
+                       id="last_name"
+                       name="last_name"
+                       value="{{ last_name }}"
+                       required>
+            </div>
+            -->
+            <input type="hidden" name="community_id" value="{{ community_id }}">
+            <button type="submit"
+                    class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-primary-green hover:text-lc-700 focus:shadow-outline transition duration-150 ease-in-out">
+                Save Changes
+            </button>
+        </form>
+    </div>
+{% endblock %}

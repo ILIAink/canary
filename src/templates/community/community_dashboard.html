@@ -66,7 +66,27 @@
                         </svg>
                         Invite Members
                     </button>
-                    <a href="#"
+
+                    <form method="post" action="{% url 'communities:edit_community_redirect' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="admin_status" value="{{ is_admin }}">
+                        <input type="hidden" name="community_id" value="{{ community.id }}">
+                        <button type="submit"
+                                class="inline-flex items-center justify-center bg-lc-orange text-white p-2 rounded mb-4 hover:bg-gray-500 transition-colors">
+                            <svg class="w-5 h-5 mr-2"
+                             fill="none"
+                             stroke="currentColor"
+                             viewBox="0 0 24 24"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                            </path>
+                        </svg>
+                        Edit Community
+                        </button>
+                    </form>
+
+
+                    <!-- <a href={% url 'communities:edit_community_redirect' %}
                        class="inline-flex items-center justify-center bg-lc-orange text-white p-2 rounded mb-4 hover:bg-gray-500 transition-colors">
                         <svg class="w-5 h-5 mr-2"
                              fill="none"
@@ -78,6 +98,8 @@
                         </svg>
                         Edit Community
                     </a>
+                    -->
+
                 </div>
                 <div class="bg-lc-med-dark rounded-lg">
                     <h5 class="text-lg font-semibold text-white mb-2">
@@ -100,9 +122,35 @@
             <input type="hidden" name="user_id" value="{{ user.id }}">
             <button type="submit" class="btn btn-primary">See All Members</button>
         </form>
+        <button onclick="openLeavePopup()" class="pt=6 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+            Leave Community
+        </button>
     </div>
+
+    <div id="leave_popup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+        <div class="bg-white rounded-lg w-1/2 p-6">
+            <h2 class="text-xl text-center font-semibold mb-4">Are you sure you want to leave this community?</h2>
+
+            <form method="post" action="{% url "communities:leave_community" %}">
+                {% csrf_token %}
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                <input type="hidden" name="community_id" value="{{ community.id }}">
+
+                <div class="flex justify-center items-center mt-2">
+                    <button onclick="closeLeavePopup()" type="submit" class="mr-4 pt=6 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+                        Yes, leave community
+                    </button>
+                    <button onclick="closeLeavePopup()" type="button" class="pt=6 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                        No, go back
+                    </button>
+                </div>
+            </form>
+        </div><
+    </div>
+
+
 <!-- Anonymous Link Popup -->
-<div id="anonymousPopup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+    <div id="anonymousPopup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
         <div class="bg-white rounded-lg w-1/2 p-6">
             <h2 class="text-xl font-semibold mb-4">Create Invite Link</h2>
             <form id="anonymousForm" method="post">
@@ -170,6 +218,14 @@
         function closeAnonPopup() {
             document.getElementById('anonymousPopup').classList.add('hidden');
         }
+
+        function openLeavePopup(){
+            document.getElementById('leave_popup').classList.remove('hidden')
+        }
+        function closeLeavePopup(){
+            document.getElementById("leave_popup").classList.add('hidden')
+        }
+
     </script>
     <script>
         // Function to copy invite link to clipboard

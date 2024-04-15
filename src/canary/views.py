@@ -32,11 +32,14 @@ def dashboard(request):
             
        user_communities = CommunityMember.objects.filter(member=request.user, is_admin=False)
        admin_communities = CommunityMember.objects.filter(member=request.user, is_admin=True)
+       is_super_user = request.user.is_superuser
        both_empty = False
        if(not(user_communities) and not(admin_communities)):
             both_empty = True
 
+
        return render(request, 'dashboard/dashboard_user_final.html', {'user': request.user, 'user_communities': user_communities, "admin_communities": admin_communities, 'both_empty': both_empty, 'num_notifications': num_notifications})
+
    else:
        # Handle the case when the user is not authenticated, perhaps redirect to login page
        return render(request, 'account/login.html')

@@ -32,6 +32,7 @@ class CommunityTests(TestCase):
     admin = CommunityMember.objects.get(community=community, member=testUser, is_admin=True, is_owner=True),
     self.assertIsNotNone(admin)
 
+  #this test broke after community joining was switched to links
   """"
   def test_join_community_valid_community(self):
     userModel = apps.get_model('accounts', 'User')

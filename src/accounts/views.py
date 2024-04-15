@@ -29,6 +29,11 @@ def save_profile(request):
         user.save()
         messages.success(request, "User Info Successfully Updated!")
         return HttpResponseRedirect(reverse("canary:dashboard"))
+def reset_password(request):
+    return render(request, 'account/reset_password.html')
+
+def admin_dash(request):
+    return render(request, 'dashboard/dash_admin_new.html')
 
 
 

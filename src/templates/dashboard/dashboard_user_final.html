@@ -13,6 +13,21 @@
             <div class="bg-lc-900 shadow-md rounded px-8 pt-6 pb-8 mb-4">
 
                 <div class="w-auto h-auto mx-auto flex justify-around">
+
+                    {% if is_super_user %}
+                        <div class="mt-5">
+                             <form method="post" action="{% url 'accounts:admin_dash' %}">
+                             {% csrf_token %}
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                 <button type="submit"
+                                class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-primary-green hover:text-lc-700 focus:shadow-outline transition duration-150 ease-in-out">
+                                Site Admin Dashboard
+                            </button>
+                        </form>
+                        </div>
+                    {% endif %}
+
+
                     <div class="mt-5">
                         <form method="post" action="{% url 'communities:create_community' %}">
                             {% csrf_token %}
