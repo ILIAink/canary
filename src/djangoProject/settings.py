@@ -123,6 +123,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                "djangoProject.context_processors.notifications_count"
             ],
         },
     },
@@ -134,6 +135,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     "django.core.context_processors.request",
+    "djangoProject.context_processors.notifications_count",
 )
 
 WSGI_APPLICATION = 'djangoProject.wsgi.application'
