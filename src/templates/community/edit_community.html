@@ -10,7 +10,7 @@
             <div class="mb-4">
                 <label for="community_name" class="block text-white font-bold mb-2">Name:</label>
                 <input type="text"
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-white bg-lc-700 leading-tight focus:outline-none focus:shadow-outline"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-black bg-lc-700 leading-tight focus:outline-none focus:shadow-outline"
                        id="community_name"
                        name="community_name"
                        value= "{{ name }}"
@@ -19,7 +19,7 @@
             <div class="mb-4">
                 <label for="community_description" class="block text-white font-bold mb-2">Description:</label>
                 <input type="text"
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-white bg-lc-700 leading-tight focus:outline-none focus:shadow-outline"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-black bg-lc-700 leading-tight focus:outline-none focus:shadow-outline"
                        id="community_description"
                        name="community_description"
                        value="{{ description }}"
@@ -41,6 +41,12 @@
                     class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-primary-green hover:text-lc-700 focus:shadow-outline transition duration-150 ease-in-out">
                 Save Changes
             </button>
+            <a  href="{% url 'communities:dashboard' community_id %}"
+                    class="text-white font-bold py-2 px-4 rounded hover:bg-primary-green hover:text-lc-700 focus:shadow-outline transition duration-150 ease-in-out">
+                Go Back
+            </a>
+
+
         </form>
     </div>
 {% endblock %}
