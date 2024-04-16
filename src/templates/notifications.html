@@ -17,13 +17,13 @@
         <div class="flex justify-between">
             <div>
                 <div class="flex justify-between">
-                    <a class="text-white" href="{% url 'communities:dashboard' notif.community.id %}">{{ notif.content }}</a>
+                    <a class="text-white hover:text-blue-300" href="{% url 'communities:dashboard' notif.community.id %}">{{ notif.content }}</a>
 
                     <form method="post" action="{% url 'canary:delete_notification' %}">
                         {% csrf_token %}
                         <input type="hidden" name="notif_id" value="{{ notif.id }}">
-                        <button type="submit" class="px-5 hover:text-blue-500">
-                            X
+                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-xs text-white font-bold py-1 px-2 rounded-full flex items-center justify-center ml-7">
+                            Delete
                         </button>
                     </form>
                 </div>
