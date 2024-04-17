@@ -32,11 +32,13 @@
                                 {% for community_member in admin_communities %}
                                 <div
                                     class="bg-gray-600 border border-gray-500 rounded-lg p-4 text-white hover:bg-gray-500 transition duration-150 ease-in-out">
-                                    <h4 class="text-lg">{{ community_member.community.name }}</h4>
-                                    <a href="{% url 'communities:dashboard' community_member.community.id %}"
-                                        class="inline-block mt-2 text-blue-400 hover:text-blue-300">
-                                        View community
-                                    </a>
+                                    <!--  <h4 class="text-lg">{{ community_member.community.name }}</h4>  -->
+                                    <div class="flex items-center justify-center">
+                                        <a href="{% url 'communities:dashboard' community_member.community.id %}"
+                                            class="inline-block mt-2 text-xl text-blue-400 text-center hover:text-blue-300">
+                                            {{ community_member.community.name }}
+                                        </a>
+                                    </div>
                                 </div>
                                 {% endfor %}
                             </div>
@@ -49,11 +51,12 @@
                                 {% for community_member in user_communities %}
                                 <div
                                     class="bg-gray-600 border border-gray-500 rounded-lg p-4 text-white hover:bg-gray-500 transition duration-150 ease-in-out">
-                                    <h4 class="text-lg">{{ community_member.community.name }}</h4>
-                                    <a href="{% url 'communities:dashboard' community_member.community.id %}"
-                                        class="inline-block mt-2 text-blue-400 hover:text-blue-300">
-                                        View community
-                                    </a>
+                                    <div class="flex items-center justify-center">
+                                        <a href="{% url 'communities:dashboard' community_member.community.id %}"
+                                            class="inline-block mt-2 text-xl text-blue-400 text-center hover:text-blue-300">
+                                            {{ community_member.community.name }}
+                                        </a>
+                                    </div>
                                 </div>
                                 {% endfor %}
                             </div>

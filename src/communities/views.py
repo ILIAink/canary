@@ -41,17 +41,20 @@ def create_community(request):
     return render(request, 'community/create_community.html')
 
 
-def edit_community_redirect(request):
+def edit_community_redirect(request, community_id):
 
-    access_perms = check_user_access(request, page_type='blah', level='admin', community_id=request.POST.get('community_id'))
-    if not access_perms:
-        return redirect('communities:dashboard', community_id=request.POST.get('community_id'))
-    else:
-        return render(request, 'community/edit_community.html', context={'community_id': request.POST.get('community_id')})
+    #access_perms = check_user_access(request, page_type='blah', level='admin', community_id=request.POST.get('community_id'))
+    #if not access_perms:
+        #return redirect('communities:dashboard', community_id=request.POST.get('community_id'))
+    #else:
+        #return render(request, 'community/edit_community.html', context={'community_id': request.POST.get('community_id')})
 
     #is_admin = request.POST.get('is_admin')
     #if is_admin == 'false':
         #return render(request, 'community/edit_community.html')
+
+    return render(request, 'community/edit_community.html', context={'community_id': community_id})
+
 
 def edit_community(request):
     community = get_object_or_404(Community, pk=request.POST.get('community_id'))
@@ -63,10 +66,10 @@ def edit_community(request):
     community.save()
     return redirect('communities:dashboard', community_id=request.POST.get('community_id'))
 
-def leave_community(request):
-    community = get_object_or_404(Community, pk=request.POST.get('community_id'))
+def leave_community(request, community_id):
+    community = get_object_or_404(Community, pk=community_id)
     user_id = request.POST.get('user_id')
-    CommunityMember.objects.filter(community=community, member=user_id).delete()
+    CommunityMember.objects.filter(community=community, member=request.user).delete()
     return redirect('canary:dashboard')
 
 
