@@ -404,6 +404,10 @@ def change_admin_status(request, community_id, member_id):
     # Toggle the is_admin status of the CommunityMember object
     community_member.is_admin = not community_member.is_admin
     community_member.save()
+
+    if not check_user_access(request, 'community', community_id=community_id, level='admin'):
+        return HttpResponseRedirect(reverse("canary:dashboard"))
+    
     return HttpResponseRedirect(reverse("communities:community_members", args=[community_id,]))
 
 @login_required
