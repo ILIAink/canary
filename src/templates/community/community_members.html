@@ -40,8 +40,13 @@
                             {% csrf_token %}
                             <input type="hidden" name="user_id" value="{{ user.id }}">
                             {% if member.is_admin %}
-                            <button type="submit"
-                                class="bg-yellow-500 text-white text-sm py-1 px-4 rounded hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition duration-150 ease-in-out">Demote</button>
+                                {% if member.is_owner %}
+                                    <a href="{% url 'communities:make_owner' community_id member.member.id %}"
+                                        class="bg-blue-500 text-white text-sm py-1 px-4 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150 ease-in-out">Make New Owner </a>
+                                {% else %}
+                                    <button type="submit"
+                                        class="bg-yellow-500 text-white text-sm py-1 px-4 rounded hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition duration-150 ease-in-out">Demote</button>
+                                {% endif %}
                             {% else %}
                             <button type="submit"
                                 class="bg-gray-300 text-white text-sm py-1 px-4 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition duration-150 ease-in-out">Promote</button>

@@ -39,4 +39,7 @@ urlpatterns = [
     re_path(r"^(?P<community_id>[0-9a-f-]+)/remove_member/(?P<member_id>[0-9a-f-]+)/", views.remove_member,
             name="remove_member"),
     re_path(r"^(?P<community_id>[0-9a-f-]+)/community_members/", views.community_members, name="community_members"),
+    re_path(r"^(?P<community_id>[0-9a-f-]+)/make_owner/(?P<member_id>[0-9a-f-]+)/", views.make_owner, name="make_owner"),
+    re_path(r"^(?P<community_id>[0-9a-f-]+)/save_owner/(?P<member_id>[0-9a-f-]+)/", views.save_owner, name="save_owner"),
+
 ]
