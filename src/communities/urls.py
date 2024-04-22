@@ -5,7 +5,6 @@ app_name = "communities"
 urlpatterns = [
     path("create_community/", views.create_community, name="create_community"),
     path("save_community", views.save_community, name="save_community"),
-    path("admin_community_home/", views.admin_community_home, name="admin_community_home"),
     #path("edit_community/", views.edit_community_redirect, name="edit_community_redirect"),
     re_path(r"^(?P<community_id>[0-9a-f-]+)/edit_community/$", views.edit_community_redirect, name="edit_community_redirect"),
 
