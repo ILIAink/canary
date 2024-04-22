@@ -1,4 +1,5 @@
 import json
+import re
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -42,24 +43,27 @@ def create_community(request):
 
 
 def edit_community_redirect(request, community_id):
-
-    #access_perms = check_user_access(request, page_type='blah', level='admin', community_id=request.POST.get('community_id'))
-    #if not access_perms:
-        #return redirect('communities:dashboard', community_id=request.POST.get('community_id'))
-    #else:
-        #return render(request, 'community/edit_community.html', context={'community_id': request.POST.get('community_id')})
-
-    #is_admin = request.POST.get('is_admin')
-    #if is_admin == 'false':
-        #return render(request, 'community/edit_community.html')
-
     return render(request, 'community/edit_community.html', context={'community_id': community_id})
 
-
+@login_required
 def edit_community(request):
+
+    # make sure the user is a community admin
+    if not check_user_access(request, 'community', community_id=request.POST.get('community_id'), level='admin'):
+        return HttpResponseRedirect(reverse("canary:dashboard"))
+
     community = get_object_or_404(Community, pk=request.POST.get('community_id'))
     new_description = request.POST.get('community_description')
     new_name = request.POST.get('community_name')
+
+    # validate the new info
+    if re.match(r"^\s*$", new_name) or len(new_name) > 50:
+        messages.error(request, 'Invalid community name. Please try again.')
+        return HttpResponseRedirect(reverse("communities:edit_community_redirect", args=[community.id]))
+    if re.match(r"^\s*$", new_description) or len(new_description) > 500:
+        messages.error(request, 'Invalid community description. Please try again.')
+        return HttpResponseRedirect(reverse("communities:edit_community_redirect", args=[community.id]))
+
     community.description = new_description
     community.name = new_name
     community.updated_at = timezone.now()
@@ -72,11 +76,6 @@ def leave_community(request, community_id):
     CommunityMember.objects.filter(community=community, member=request.user).delete()
     return redirect('canary:dashboard')
 
-
-# Admin home view - displays the home view for the admin of a community
-# TODO do we want to re-implement this, or use a single dashboard view for all users?
-def admin_community_home(request):
-    return render(request, 'dashboard/dashboard_community_admin.html')
 
 @login_required
 def community_dashboard(request, community_id):
@@ -212,15 +211,21 @@ def community_members(request, community_id):
 
 
 # def for saving a community after creation
+@login_required
 def save_community(request):
 
     name = request.POST.get('name')
     description = request.POST.get('description')
     community = Community(name=name, description=description)
 
-    # if the user is not logged in, redirect to the site home page
-    if not request.user.is_authenticated:
-        return HttpResponseRedirect(reverse("canary:")) # TODO is this the right syntax
+    # if the community info is invalid, warn the user and redirect back to the create community page
+    if re.match(r"^\s*$", name) or len(name) > 50:
+        messages.error(request, 'Invalid community name. Please try again.')
+        return HttpResponseRedirect(reverse("communities:create_community"))
+    if re.match(r"^\s*$", description) or len(description) > 500:
+        print(description)
+        messages.error(request, 'Invalid community description. Please try again.')
+        return HttpResponseRedirect(reverse("communities:create_community"))
 
     # Save the community to the database
     community.save()
@@ -273,6 +278,14 @@ def save_report(request, community_id):
     # data should be Title, Content, Author, Resolution Method, and Media
     title = request.POST.get('title')
     content = request.POST.get('content')
+
+    # validate the report content
+    if re.match(r"^\s*$", title) or len(title) > 50:
+        messages.error(request, 'Invalid report title. Please try again.')
+        return HttpResponseRedirect(reverse("communities:create_report", args=[community_id,]))
+    if re.match(r"^\s*$", content) or len(content) > 2000:
+        messages.error(request, 'Invalid report content. Please try again.')
+        return HttpResponseRedirect(reverse("communities:create_report", args=[community_id,]))
 
     # if author is anonymous, set to None
     # else, retrieve the author from the request
@@ -355,7 +368,7 @@ def edit_report(request, community_id, report_id):
 
     if status:
         report.status = status
-    if notes:
+    if notes and len(notes) < 2000:
         report.notes = notes
 
     report.save()

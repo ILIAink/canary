@@ -14,7 +14,7 @@ class Community(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
 
-    description = models.TextField()
+    description = models.TextField(blank=False, max_length=500)
 
     # each community stores a list of reports submitted to that community
     reports = models.ManyToManyField('Report')
@@ -56,8 +56,8 @@ class CommunityMember(models.Model):
 # report model
 class Report(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=100)
-    content = models.TextField()
+    title = models.CharField(max_length=100, blank=False)
+    content = models.TextField(max_length=2000, blank=True)
 
     # the author user is optional (for anonymous reports)
     author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, blank=True)
@@ -87,7 +87,7 @@ class Report(models.Model):
     )
 
     # reports have a large text field for notes added by an admin
-    notes = models.TextField(blank=True)
+    notes = models.TextField(blank=True, max_length=2000)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
