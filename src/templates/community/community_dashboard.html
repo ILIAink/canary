@@ -124,11 +124,11 @@
                             <!-- Dropdown Menu -->
                             <div class="absolute right-0 mt-2 py-2 w-48 bg-gray-200 rounded-md shadow-xl z-20"
                                 x-show="isOpen" x-transition>
+                                {% if is_admin %}
                                 <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
                                     onclick="openAnonPopup(); isOpen = false">Create Anonymous Submission Link</a>
                                 <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
                                     onclick="openInvitePopup(); isOpen = false">Invite Members</a>
-                                {% if is_admin %}
                                 <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="{% url 'communities:edit_community_redirect' community.id %}"
                                     onclick="isOpen = false">Edit Community</a>
                                 {% endif %}
@@ -340,7 +340,9 @@
                 data.invite_link = window.location.origin + data.invite_link;
                 copyToClipboard( data.invite_link );
                 alert( 'Invite link copied to clipboard!' );
-                // Close the dropdown menu
+                // close the popup
+                closeInvitePopup();
+                // close the dropdown menu
                 closeDropdownMenu();
             } )
             .catch( error => {
@@ -370,7 +372,9 @@
                 data.sub_link = window.location.origin + data.invite_link;
                 copyToClipboard( data.sub_link );
                 alert( 'Submission link copied to clipboard!' );
-                // Close the dropdown menu
+                // close the popup
+                closeAnonPopup();
+                // close the dropdown menu
                 closeDropdownMenu();
             } )
             .catch( error => {
