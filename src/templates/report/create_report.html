@@ -36,9 +36,9 @@
                         id="media" name="media" multiple>
                 </div>
                 <!-- anonymous checkbox -->
-                <div class="flex items-center">
+                <div class="gap-2 flex items-center">
                     <input type="checkbox" id="anonymous" name="anonymous"
-                        class="h-5 w-10 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                        class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                     <label for="anonymous" class="block text-white font-bold ">Submit Anonymously</label>
                 </div>
                 <button type="submit"
@@ -46,7 +46,7 @@
                     Submit Report
                 </button>
                 <a href="{% url 'communities:dashboard' community_id %}"
-                        class="bg-indigo-400 hover:bg-indigo-600 ml-5 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition duration-150 ease-in-out inline-block">
+                    class="bg-indigo-400 hover:bg-indigo-600 ml-5 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition duration-150 ease-in-out inline-block">
                     Go Back
                 </a>
             </form>

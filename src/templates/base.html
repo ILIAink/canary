@@ -40,7 +40,7 @@
                             class="relative inline-flex items-center rounded-full border border-gray-600 hover:bg-orange-400 p-2">
                             {% if notifications_count > 0 %}
                             <span
-                                class="absolute top-0 right-0 h-3 w-3 rounded-full bg-red-600 text-white flex justify-center items-center text-xs">
+                                class="absolute top-0 right-0 h-4 w-4 rounded-full bg-red-600 text-white flex justify-center items-center text-xs">
                                 {{ notifications_count }}
                             </span>
                             {% endif %}
@@ -60,7 +60,7 @@
                             </svg>
                         </button>
                         <div x-show="open" @click.away="open = false"
-                            class="absolute right-0 mt-2 py-2 w-48 bg-lc-900 rounded-md shadow-xl z-20">
+                            class="absolute right-0 mt-2 py-2 w-48 bg-gray-600 rounded-md shadow-xl z-20">
                             <a href="{% url 'account_email' %}"
                                 class="block px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-gray-600">Change
                                 Email</a>
