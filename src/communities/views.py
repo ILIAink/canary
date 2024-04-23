@@ -278,6 +278,7 @@ def save_report(request, community_id):
     # data should be Title, Content, Author, Resolution Method, and Media
     title = request.POST.get('title')
     content = request.POST.get('content')
+    anonymous = request.POST.get('anonymous')
 
     # validate the report content
     if re.match(r"^\s*$", title) or len(title) > 50:
@@ -287,9 +288,10 @@ def save_report(request, community_id):
         messages.error(request, 'Invalid report content. Please try again.')
         return HttpResponseRedirect(reverse("communities:create_report", args=[community_id,]))
 
-    # if author is anonymous, set to None
+    # if author is anonymous, or the anonymous checkbox is set, set to None
     # else, retrieve the author from the request
-    if request.user.is_authenticated:
+
+    if request.user.is_authenticated and anonymous is None:
         author = get_user_model().objects.get(id=request.user.id)
     else:
         author = None
