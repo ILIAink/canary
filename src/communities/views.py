@@ -349,10 +349,10 @@ def view_report(request, community_id, report_id):
 
         if is_admin and report.status == 'NEW':
             report.status = 'INP'
+            report.save()
             if report.author is not None:
                 report_status_notif(recipient_id=report.author.id, report_id=report_id, community_id=community_id)
-            report.save()
-    
+
     return render(request, 'report/view_report.html', {'report': report, 'media': media, 'community': community, 'is_admin': is_admin})
 
 @login_required
@@ -368,6 +368,7 @@ def edit_report(request, community_id, report_id):
     status = request.POST.get('status')
     notes = request.POST.get('notes')
 
+    old_status = report.status
     if status:
         report.status = status
     if notes and len(notes) < 2000:
@@ -378,7 +379,7 @@ def edit_report(request, community_id, report_id):
     # send notif to reporter
     if report.author is not None:
         recipient_id = report.author.id
-        if status:
+        if status and old_status != status:
             report_status_notif(recipient_id=recipient_id, report_id=report_id, community_id=community_id)
         if notes:
             report_notes_notif(recipient_id=recipient_id, report_id=report_id, community_id=community_id)
