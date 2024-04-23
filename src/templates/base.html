@@ -33,18 +33,24 @@
                     {% endif %}
 
                 </div>
-                <div class="flex gap-4">
+                <div class="flex items-center gap-4">
                     {% if user.is_authenticated %}
-                        <a href="{% url 'canary:notifications'%}">
-                                <strong class="relative inline-flex items-center rounded border hover:bg-orange-400 px-2.5 py-1.5 text-xs font-medium">
-                                    {% if notifications_count > 0 %}
-                                        <span class="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-600 text-white flex justify-center items-center items">
-                                            <span>{{ notifications_count }}</span>
-                                        </span>
-                                    {% endif %}
-                                    <span class="text-white text-md"> Activity </span>
-                                </strong>
-                            </a>
+                    <a href="{% url 'canary:notifications'%}">
+                        <div
+                            class="relative inline-flex items-center rounded-full border border-gray-600 hover:bg-orange-400 p-2">
+                            {% if notifications_count > 0 %}
+                            <span
+                                class="absolute top-0 right-0 h-3 w-3 rounded-full bg-red-600 text-white flex justify-center items-center text-xs">
+                                {{ notifications_count }}
+                            </span>
+                            {% endif %}
+                            <svg class="h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path
+                                    d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                            </svg>
+                        </div>
+                    </a>
                     <div x-data="{ open: false }" class="relative">
                         <button @click="open = !open" class="flex items-center focus:outline-none text-text-color">
                             {{ user.username }}
