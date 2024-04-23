@@ -34,6 +34,10 @@ def check_user_access(request, page_type, level='member', community_id=None, rep
         community = get_object_or_404(Community, pk=community_id)
         if not CommunityMember.objects.filter(community=community, member=request.user, is_admin=True).exists():
             return False
+    elif level == 'owner':
+        community = get_object_or_404(Community, pk=community_id)
+        if not CommunityMember.objects.filter(community=community, member=request.user, is_owner=True).exists():
+            return False
 
     return True
 
@@ -215,7 +219,7 @@ def community_members(request, community_id):
 @login_required
 def make_owner(request, community_id, member_id):
     # make sure the user has access to the community
-    if not check_user_access(request, 'community', community_id=community_id):
+    if not check_user_access(request, 'community', level='owner', community_id=community_id):
         return HttpResponseRedirect(reverse("canary:dashboard"))
 
     # Get the community object or return 404 if not found
