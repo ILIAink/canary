@@ -8,7 +8,8 @@ from .models import *
 #from accounts.models import User
 from .views import *
 from django.contrib.messages.storage.fallback import FallbackStorage
-
+from django.shortcuts import get_object_or_404
+from django.http import Http404
 
 class CommunityTests(TestCase):
 
@@ -81,3 +82,50 @@ class CommunityTests(TestCase):
     self.assertEqual(report.content, 'this is a report')
     # check that community acknowledges report
     self.assertIn(report, test_community.reports.all())
+
+
+
+  def test_invalid_save_community_too_long(self):
+    request = HttpRequest()
+    request.method = "GET"
+    request.POST = {'name': 'test', 'description': "Lets mess some stuff up" * 30}
+
+
+    userModel = apps.get_model('accounts', 'User')
+    testUser = userModel.objects.create_user(email="test_user@gmail.com", username='testuser')
+    request.user = testUser
+
+    setattr(request, 'session', 'session')
+    messages = FallbackStorage(request)
+    setattr(request, '_messages', messages)
+    # view being tested
+    save_community(request)
+
+    with self.assertRaises(Http404):
+      get_object_or_404(Community, name="test")
+
+    with self.assertRaises(Http404):
+      get_object_or_404(CommunityMember, member=testUser)
+
+  def test_invalid_save_community_name_is_space(self):
+
+    request = HttpRequest()
+    request.method = "GET"
+    request.POST = {'name': ' ', 'description': "Lets mess some stuff up"}
+
+    userModel = apps.get_model('accounts', 'User')
+    testUser = userModel.objects.create_user(email="test_user@gmail.com", username='testuser')
+    request.user = testUser
+
+    setattr(request, 'session', 'session')
+    messages = FallbackStorage(request)
+    setattr(request, '_messages', messages)
+
+    save_community(request)
+
+    with self.assertRaises(Http404):
+      get_object_or_404(Community, name="test")
+
+    with self.assertRaises(Http404):
+      get_object_or_404(CommunityMember, member=testUser)
+
