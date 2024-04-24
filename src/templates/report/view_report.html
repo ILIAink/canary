@@ -66,7 +66,7 @@
                             <div class="bg-gray-700 rounded-lg p-4">
                                 <a href="{{ media_file.file.url }}"
                                    target="_blank"
-                                   class="text-indigo-500 hover:text-indigo-400">{{ media_file.file.name }}</a>
+                                   class="text-indigo-500 hover:text-indigo-400">{{ media_file.file.name  | slice:"8:" }}</a>
                             </div>
                         {% endfor %}
                     </div>
