@@ -205,3 +205,22 @@ class CommunityTests(TestCase):
     request.user = testUser
     result = check_user_access(request, "community", level='admin', community_id=testCommunity.id)
     self.assertFalse(result)
+
+  def test_leave_community_member(self):
+    userModel = apps.get_model('accounts', 'User')
+    testUser = userModel.objects.create_user(email="test_user@gmail.com", username='testuser')
+    testCommunity = Community(name="testCommunity", description="for testing")
+    testUser.save()
+    testCommunity.save()
+
+    member = CommunityMember(community=testCommunity, member=testUser, is_admin=False)
+    member.save()
+
+    request = HttpRequest()
+    request.user = testUser
+
+    leave_community(request=request, community_id=testCommunity.id)
+    
+    user_in_community = CommunityMember.objects.filter(community=testCommunity, member=testUser).exists()
+    
+    self.assertFalse(user_in_community)
