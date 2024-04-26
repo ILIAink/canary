@@ -224,3 +224,24 @@ class CommunityTests(TestCase):
     user_in_community = CommunityMember.objects.filter(community=testCommunity, member=testUser).exists()
     
     self.assertFalse(user_in_community)
+
+  def test_delete_report(self):
+    userModel = apps.get_model('accounts', 'User')
+    testUser = userModel.objects.create_user(email="test_user@gmail.com", username='testuser')
+    testCommunity = Community(name="testCommunity", description="for testing")
+    testUser.save()
+    testCommunity.save()
+
+    member = CommunityMember(community=testCommunity, member=testUser, is_admin=True)
+    member.save()
+
+    testReport = Report(title="test_report", content="test_content", author=testUser)
+    testReport.save()
+
+    httpRequest = HttpRequest()
+    setattr(httpRequest, 'user', testUser)
+
+    delete_report(httpRequest, testCommunity.id, testReport.id)
+
+    result = Report.objects.filter(title="test_report", content='test_content', author=testUser).exists()
+    self.assertFalse(result)
