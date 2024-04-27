@@ -105,7 +105,7 @@ def community_dashboard(request, community_id):
         reports = Report.objects.filter(
             community=community, author=request.user)
 
-    return render(request, 'community/community_dashboard.html', {'community': community, 'members': members, 'reports': reports, 'is_admin': is_admin})
+    return render(request, 'community/community_dashboard.html', {'community': community, 'members': members, 'reports': reports, 'is_admin': is_admin, 'community_id': community_id})
 
 
 def join_community_by_invite(request, token):
@@ -378,7 +378,7 @@ def view_report(request, community_id, report_id):
                 report_status_notif(
                     recipient_id=report.author.id, report_id=report_id, community_id=community_id)
 
-    return render(request, 'report/view_report.html', {'report': report, 'media': media, 'community': community, 'is_admin': is_admin})
+    return render(request, 'report/view_report.html', {"community_id": community_id, 'report': report, 'media': media, 'community': community, 'is_admin': is_admin})
 
 
 @login_required

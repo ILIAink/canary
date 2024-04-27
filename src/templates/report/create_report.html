@@ -1,4 +1,46 @@
 {% extends "base.html" %}
+{% block breadcrumb %}
+<nav class="flex py-3 px-5 text-gray-700 bg-gray-600 shadow-lg" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <li class="inline-flex items-center">
+            <a href="{% url 'canary:home' %}"
+                class="inline-flex items-center text-sm font-medium text-white hover:text-gray-200">
+                <svg aria-hidden="true" class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z">
+                    </path>
+                </svg>
+                Home
+            </a>
+        </li>
+        <li>
+            <div class="flex items-center">
+                <svg aria-hidden="true" class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clip-rule="evenodd"></path>
+                </svg>
+                <a href="{% url 'canary:dashboard' %}"
+                    class="ml-1 text-sm font-medium text-white hover:text-gray-200 md:ml-2">User Dashboard</a>
+            </div>
+        </li>
+        <li>
+            <div class="flex items-center">
+                <svg aria-hidden="true" class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clip-rule="evenodd"></path>
+                </svg>
+                <a href="{% url 'communities:dashboard' community_id %}"
+                    class="ml-1 text-sm font-medium text-indigo-400 hover:text-gray-200 md:ml-2">Community Dashboard</a>
+            </div>
+        </li>
+    </ol>
+</nav>
+{% endblock breadcrumb %}
 {% block content %}
 <div class="bg-gray-900 mt-4 flex items-center justify-center">
     <div class="w-full max-w-4xl bg-gray-800 shadow-md rounded-lg overflow-hidden">
@@ -41,14 +83,17 @@
                         class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                     <label for="anonymous" class="block text-white font-bold ">Submit Anonymously</label>
                 </div>
-                <button type="submit"
-                    class="bg-indigo-400 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
-                    Submit Report
-                </button>
-                <a href="{% url 'communities:dashboard' community_id %}"
-                    class="bg-indigo-400 hover:bg-indigo-600 ml-5 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition duration-150 ease-in-out inline-block">
-                    Go Back
-                </a>
+                <div class="flex gap-2">
+                    <a href="{% url 'communities:dashboard' community_id %}"
+                        class="bg-indigo-400 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition duration-150 ease-in-out inline-block">
+                        Go Back
+                    </a>
+                    <button type="submit"
+                        class="bg-indigo-400 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
+                        Submit Report
+                    </button>
+                </div>
+
             </form>
         </div>
     </div>
