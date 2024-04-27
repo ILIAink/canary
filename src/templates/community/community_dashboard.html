@@ -273,24 +273,28 @@
     </div>
 </div>
 
-<!--leave popup -->
-<div id="leave_popup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
-    <div class="bg-white rounded-lg w-1/2 p-6">
-        <h2 class="text-xl text-center font-semibold mb-4">Are you sure you want to leave this community?</h2>
-
-        <div class="flex justify-center items-center mt-2">
-            <a href="{% url 'communities:leave_community' community.id %}"
-                class="mr-4 pt-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
-                Yes, leave community
-            </a>
+<!-- Leave Community Popup -->
+<!-- Leave Community Popup -->
+<div id="leavePopup" class="fixed inset-0 bg-gray-400 bg-opacity-10 flex items-center justify-center hidden"
+    style="display: none;">
+    <div
+        class="bg-white rounded-lg max-w-lg w-full mx-auto p-8 space-y-6 shadow-xl transition-transform transform scale-95">
+        <h2 class="text-2xl font-semibold text-gray-800">Are you sure you want to leave this community?</h2>
+        <div class="flex justify-center items-center mt-2 space-x-2">
             <button onclick="closeLeavePopup()"
-                class="mr-4 pt-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                class="bg-indigo-400 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
                 No, go back
             </button>
+            <a href="{% url 'communities:leave_community' community.id %}"
+                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
+                Yes, leave community
+            </a>
+            
         </div>
-
     </div>
 </div>
+
+
 
 {% endblock %}
 
@@ -344,11 +348,13 @@
         document.getElementById( 'anonymousPopup' ).classList.add( 'hidden' );
     }
     function openLeavePopup() {
-        document.getElementById( 'leave_popup' ).classList.remove( 'hidden' )
+        document.getElementById( 'leavePopup' ).style.display = 'flex'; // Show the popup by setting display to 'flex'
     }
+
     function closeLeavePopup() {
-        document.getElementById( "leave_popup" ).classList.add( 'hidden' )
+        document.getElementById( 'leavePopup' ).style.display = 'none'; // Hide the popup by setting display to 'none'
     }
+
 
 
     // Function to copy invite link to clipboard
