@@ -305,6 +305,9 @@
         const toggleButton = document.querySelector( '.dropdown button' );
         const dropdownMenu = document.querySelector( '.dropdown div' );
 
+        // Initially hide the dropdown menu
+        dropdownMenu.style.display = 'none';
+
         // Function to toggle dropdown open/close
         function toggleDropdown() {
             const isOpen = dropdownMenu.style.display === 'block';
