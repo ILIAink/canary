@@ -150,57 +150,58 @@
                 </ul>
 
             </div>
-            <div class="bg-gray-700 rounded-lg px-4">
-                <!-- Enhanced Community Information with Dropdown or More Interactivity -->
-                <div class="bg-gray-700 rounded-lg py-4 relative" x-data="{ isOpen: false }">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-2xl font-bold text-gray-100">Community Information</h2>
-                        <!-- Dropdown Trigger Button -->
-                        <div class="dropdown inline-block relative">
-                            <button
-                                class="bg-indigo-400 text-white p-2 rounded hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition duration-150 ease-in-out"
-                                @click="isOpen = !isOpen">
-                                More Actions
-                                <svg class="w-4 h-4 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </button>
-                            <!-- Dropdown Menu -->
-                            <div class="absolute right-0 mt-2 py-2 w-48 bg-gray-200 rounded-md shadow-xl z-20"
-                                x-show="isOpen" x-transition>
-                                {% if is_admin %}
-                                <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
-                                    onclick="openAnonPopup(); isOpen = false">Create Anonymous Submission Link</a>
-                                <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
-                                    onclick="openInvitePopup(); isOpen = false">Invite Members</a>
-                                <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300"
-                                    href="{% url 'communities:edit_community_redirect' community.id %}"
-                                    onclick="isOpen = false">Edit Community</a>
-                                {% endif %}
-                                <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
-                                    onclick="openLeavePopup(); isOpen=false">Leave Community</a>
-                            </div>
+            <div class="bg-gray-700 rounded-lg p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-100">Community Information</h2>
+                    <!-- Dropdown Trigger Button -->
+                    <div class="dropdown inline-block relative">
+                        <button
+                            class="bg-indigo-400 text-white p-2 rounded hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
+                            More Actions
+                            <svg class="w-4 h-4 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div class="absolute right-0 mt-2 py-2 w-48 bg-gray-200 rounded-md shadow-xl z-20"
+                            x-show="isOpen" x-transition>
+                            {% if is_admin %}
+                            <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
+                                onclick="openAnonPopup(); isOpen = false">Create Anonymous Submission Link</a>
+                            <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
+                                onclick="openInvitePopup(); isOpen = false">Invite Members</a>
+                            <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300"
+                                href="{% url 'communities:edit_community_redirect' community.id %}"
+                                onclick="isOpen = false">Edit
+                                Community</a>
+                            {% endif %}
+                            <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
+                                onclick="openLeavePopup(); isOpen=false">Leave Community</a>
                         </div>
                     </div>
                 </div>
-
-                <div class="bg-gray-600 rounded-lg mb-5 p-4">
-                    <h5 class="text-lg font-semibold text-gray-100 mb-2">
-                        <strong>Name:</strong> {{ community.name }}
-                    </h5>
-                    <p class="text-gray-300 mb-4">
-                        <strong>Description:</strong> {{ community.description }}
-                    </p>
-                    <div class="text-gray-400 mb-4">
-                        <p>Created at: {{ community.created_at }}</p>
-                        <p>Updated at: {{ community.updated_at }}</p>
+                <div class="bg-gray-600 rounded-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <div
+                            class="w-16 h-16 rounded-full bg-gray-500 flex items-center justify-center text-white text-2xl mr-4">
+                            {{ community.name|first|upper }}
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-semibold text-gray-100">{{ community.name }}</h3>
+                            <p class="text-gray-400">{{ community.description }}</p>
+                        </div>
+                    </div>
+                    <div class="text-gray-400">
+                        <p><span class="font-semibold">Created:</span> {{ community.created_at }}</p>
+                        <p><span class="font-semibold">Updated:</span> {{ community.updated_at }}</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <!-- Anonymous Submission Popup -->
@@ -274,7 +275,6 @@
 </div>
 
 <!-- Leave Community Popup -->
-<!-- Leave Community Popup -->
 <div id="leavePopup" class="fixed inset-0 bg-gray-400 bg-opacity-10 flex items-center justify-center hidden"
     style="display: none;">
     <div
@@ -289,7 +289,7 @@
                 class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
                 Yes, leave community
             </a>
-            
+
         </div>
     </div>
 </div>

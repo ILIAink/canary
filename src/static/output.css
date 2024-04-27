@@ -1055,6 +1055,10 @@ html.dark{
   height: 1.5rem;
 }
 
+.h-16{
+  height: 4rem;
+}
+
 .min-h-screen{
   min-height: 100vh;
 }
@@ -1109,6 +1113,10 @@ html.dark{
 
 .w-6{
   width: 1.5rem;
+}
+
+.w-16{
+  width: 4rem;
 }
 
 .min-w-full{
