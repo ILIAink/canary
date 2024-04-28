@@ -238,10 +238,14 @@ class CommunityTests(TestCase):
     testReport = Report(title="test_report", content="test_content", author=testUser)
     testReport.save()
 
-    httpRequest = HttpRequest()
-    setattr(httpRequest, 'user', testUser)
+    request = HttpRequest()
+    setattr(request, 'user', testUser)
 
-    delete_report(httpRequest, testCommunity.id, testReport.id)
+    setattr(request, 'session', 'session')
+    messages = FallbackStorage(request)
+    setattr(request, '_messages', messages)
+
+    delete_report(request, testCommunity.id, testReport.id)
 
     result = Report.objects.filter(title="test_report", content='test_content', author=testUser).exists()
     self.assertFalse(result)
