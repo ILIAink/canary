@@ -28,6 +28,7 @@ def dashboard(request):
             member=request.user, is_admin=True)
         both_empty = False
         if user_communities is None and admin_communities is None:
+            print("both empty")
             both_empty = True
         return render(request, 'dashboard/dashboard_user.html', {'user': request.user, 'user_communities': user_communities, "admin_communities": admin_communities, 'both_empty': both_empty})
     else:

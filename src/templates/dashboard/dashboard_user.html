@@ -70,6 +70,7 @@
                             {% endfor %}
                         </div>
                     </div>
+                    {% endif %}
                     {% if user_communities %}
                     <div class="bg-gray-700 rounded-lg p-4">
                         <h3 class="text-xl font-semibold mb-2 text-white">Member Communities</h3>
@@ -89,7 +90,7 @@
                     </div>
                     {% endif %}
                 </div>
-                {% else %}
+                {% if both_empty %}
                 <div class="mt-6 text-center text-gray-400">
                     You are not a member of any communities.
                 </div>
