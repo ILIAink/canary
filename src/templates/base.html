@@ -1,7 +1,7 @@
 {% load static %}
 {% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 
 <head>
     <meta charset="UTF-8">
@@ -20,7 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.0"></script>
 </head>
 
-<body class="bg-gray-900 min-h-screen min-w-full text-color">
+<body class="flex flex-col min-h-screen bg-gray-900 text-color">
     <header>
         <nav class="bg-gray-800">
             <div class="display-none m-auto h-[50px] w-full items-center justify-between px-6 md:flex max-w-[1200px]">
@@ -69,7 +69,8 @@
                                 class="block px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-gray-600">Change
                                 Email</-->
                             <a href="{% url 'accounts:edit_profile' %}"
-                                class="block px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-gray-600">{% trans "Edit Profile" %}</a>   
+                                class="block px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-gray-600">{%
+                                trans "Edit Profile" %}</a>
                             <a href="{% url 'account_logout' %}"
                                 class="block px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-gray-600">Sign
                                 Out</a>
@@ -89,7 +90,7 @@
         {% block breadcrumb %}
         {% endblock breadcrumb %}
     </header>
-    <div class="bg-gray-900 mx-auto w-full grow p-4 md:max-w-[888px] md:p-6 lg:max-w-screen-xl">
+    <div class="bg-gray-900 mx-auto w-full flex-grow p-4 md:max-w-[888px] md:p-6 lg:max-w-screen-xl">
         {% block body %}
         {% if messages %}
         {% for message in messages %}
@@ -130,13 +131,14 @@
             } );
         } );
     </script>
-    <footer class="bg-gray-800 rounded-lg shadow dark:bg-gray-800">
+    <footer class="mt-auto bg-gray-800 shadow dark:bg-gray-800">
         <div class="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
-          <span class="text-sm text-white sm:text-center dark:text-gray-400">© 2024 <a href="https://b17-s24-asd-f1f7ff7a2336.herokuapp.com/" class="hover:underline">Canary™</a>All Rights Reserved.
-        </span>
-        <span class="text-sm text-white"><a>Disclaimer: This is a class project and should not be used for real-world applications.
-        </a>
-        </span>
+            <span class="text-sm text-white sm:text-center dark:text-gray-400">© 2024 <a
+                    href="https://b17-s24-asd-f1f7ff7a2336.herokuapp.com/" class="hover:underline">Canary™</a>All Rights
+                Reserved.</span>
+            <span class="text-sm text-white"><a>Disclaimer: This is a class project and should not be used for
+                    real-world
+                    applications.</a></span>
         </div>
     </footer>
 </body>
