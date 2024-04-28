@@ -23,7 +23,9 @@
               {% if field.value %}value="{{ field.value|stringformat:'s' }}"{% endif %}
               {% for attr, value in field.field.widget.attrs.items %} {% if attr != 'placeholder' and attr != 'type' and attr != 'class' %}{{ attr }}="{{ value }}"{% endif %} {% endfor %}>
           </div>
-          {{ field.errors }}
+            <div class="mb-4 text-red-500">
+              <p class="text-xs text-white">{{ field.errors }}</p>
+            </div>
         </div>
         {% endfor %}
         {% if form.non_field_errors %}
