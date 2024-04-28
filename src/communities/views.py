@@ -35,6 +35,10 @@ def check_user_access(request, page_type, level='member', community_id=None, rep
         community = get_object_or_404(Community, pk=community_id)
         if not CommunityMember.objects.filter(community=community, member=request.user, is_admin=True).exists():
             return False
+    elif level == 'owner':
+        community = get_object_or_404(Community, pk=community_id)
+        if not CommunityMember.objects.filter(community=community, member=request.user, is_owner=True).exists():
+            return False
 
     return True
 
@@ -225,6 +229,29 @@ def community_members(request, community_id):
 
     # Pass the community_members data to the template
     return render(request, 'community/community_members.html', {'community_id': community_id, 'community_member': community_member, 'user_role': user_role, 'can_remove': can_remove})
+
+
+@login_required
+def make_owner(request, community_id, member_id):
+    # make sure the user has access to the community
+    if not check_user_access(request, 'community', level='owner', community_id=community_id):
+        return HttpResponseRedirect(reverse("canary:dashboard"))
+
+    # Get the community object or return 404 if not found
+    community = get_object_or_404(Community, id=community_id)
+    # Retrieve community members for the specified community
+    community_member = CommunityMember.objects.filter(community=community)
+
+    # get the permission level of the current user
+    user_member = CommunityMember.objects.get(community=community, member=request.user)
+
+    user_role = 'owner' if user_member.is_owner else 'admin' if user_member.is_admin else 'member'
+
+    # can the user remove members?
+    can_remove = user_member.is_owner or user_member.is_admin
+
+    return render(request, 'community/make_owner.html', {'community_id': community_id, 'community_member': community_member, 'user_role': user_role, 'can_remove': can_remove})
+
 
 
 # def for saving a community after creation
@@ -474,4 +501,16 @@ def remove_member(request, community_id, member_id):
 
     # Delete the CommunityMember object
     community_member.delete()
+    return HttpResponseRedirect(reverse("communities:community_members", args=[community_id,]))
+
+@login_required
+def save_owner(request, community_id, member_id):
+    community_cur_owner = get_object_or_404(CommunityMember, community=community_id, is_owner=True)
+    community_new_owner = get_object_or_404(CommunityMember, community=community_id, member=member_id)
+    community_cur_owner.is_owner = False
+    community_cur_owner.is_admin = True
+    community_new_owner.is_owner = True
+    community_new_owner.is_admin = True
+    community_cur_owner.save()
+    community_new_owner.save()
     return HttpResponseRedirect(reverse("communities:community_members", args=[community_id,]))
