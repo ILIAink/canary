@@ -1,17 +1,59 @@
 {% extends "base.html" %}
 {% load static %}
+{% block breadcrumb %}
+<nav class="flex py-3 px-5 text-gray-700 bg-gray-600 shadow-lg" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <li class="inline-flex items-center">
+            <a href="{% url 'canary:home' %}"
+                class="inline-flex items-center text-sm font-medium text-white hover:text-gray-200">
+                <svg aria-hidden="true" class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z">
+                    </path>
+                </svg>
+                Home
+            </a>
+        </li>
+        <li>
+            <div class="flex items-center">
+                <svg aria-hidden="true" class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clip-rule="evenodd"></path>
+                </svg>
+                <a href="{% url 'canary:dashboard' %}"
+                    class="ml-1 text-sm font-medium text-white hover:text-gray-200 md:ml-2">User Dashboard</a>
+            </div>
+        </li>
+        <li>
+            <div class="flex items-center">
+                <svg aria-hidden="true" class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clip-rule="evenodd"></path>
+                </svg>
+                <a href="{% url 'communities:dashboard' community_id %}"
+                    class="ml-1 text-sm font-medium text-indigo-400 hover:text-gray-200 md:ml-2">Community Dashboard</a>
+            </div>
+        </li>
+    </ol>
+</nav>
+{% endblock breadcrumb %}
 {% block content %}
 <div class="bg-gray-900 mt-4 flex items-center justify-center">
     <div
-        class="w-full max-w-5xl bg-gray-800 shadow-md rounded-lg overflow-hidden grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
-        <div class="col-span-1 bg-gray-700 rounded-lg p-4">
+        class="w-full max-w-5xl bg-gray-800 shadow-md rounded-lg overflow-scroll grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+        <div class="col-span-1 bg-gray-700 rounded-lg p-4 overflow-scroll">
             <div class="mb-2 flex justify-between">
                 <h2 class="text-2xl font-bold text-gray-100">
                     Community Members
                 </h2>
                 {% if is_admin %}
                 <a href="{% url 'communities:community_members' community.id %}"
-                    class="inline-flex items-center justify-center bg-orange-500 text-white p-2 rounded hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
+                    class="inline-flex items-center justify-center bg-indigo-400 text-white p-2 rounded hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-gear" viewBox="0 0 16 16">
                         <path
@@ -71,7 +113,7 @@
                 {% endfor %}
             </ul>
         </div>
-        <div class="col-span-2 grid grid-rows-2 gap-6">
+        <div class="col-span-2 grid grid-rows-2 gap-6 overflow-scroll">
             <div class="bg-gray-700 rounded-lg p-4">
                 <div class="flex justify-between items-center">
                     <h2 class="text-2xl font-bold text-gray-100">
@@ -82,7 +124,7 @@
                         {% endif %}
                     </h2>
                     <a href="{% url 'communities:create_report' community.id %}"
-                        class="inline-flex items-center justify-center bg-orange-500 text-white p-2 rounded hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
+                        class="inline-flex items-center justify-center bg-indigo-400 text-white p-2 rounded hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -93,69 +135,73 @@
                 </div>
                 <ul class="divide-y divide-gray-600">
                     {% for report in reports %}
-                    <li
-                        class="py-3 px-2 mt-1 text-gray-300 hover:bg-gray-600 hover:text-white transition-colors rounded-md">
+                    <li class="py-3 px-2 mt-1 hover:bg-gray-600 hover:text-white transition-colors rounded-md">
                         <a href="{% url 'communities:view_report' community.id report.id %}"
-                            class="text-gray-300 hover:text-white transition-colors">{{ report.title }}</a>
-                        <span class="float-right text-gray-300">{{ report.get_status_display }}</span>
+                            class="block text-gray-300 hover:text-white transition-colors w-full h-full">
+                            <div class="flex justify-between">
+                                <span>{{ report.title }}</span>
+                                <span>{{ report.get_status_display }}</span>
+                            </div>
+                        </a>
                     </li>
                     {% empty %}
                     <li class="py-3 text-gray-300">No reports submitted to this community.</li>
                     {% endfor %}
                 </ul>
+
             </div>
             <div class="bg-gray-700 rounded-lg p-4">
-                <!-- Enhanced Community Information with Dropdown or More Interactivity -->
-                <div class="bg-gray-700 rounded-lg py-4 relative" x-data="{ isOpen: false }">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-2xl font-bold text-gray-100">Community Information</h2>
-                        <!-- Dropdown Trigger Button -->
-                        <div class="dropdown inline-block relative">
-                            <button
-                                class="bg-orange-500 text-white p-2 rounded hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition duration-150 ease-in-out"
-                                @click="isOpen = !isOpen">
-                                More Actions
-                                <svg class="w-4 h-4 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </button>
-                            <!-- Dropdown Menu -->
-                            <div class="absolute right-0 mt-2 py-2 w-48 bg-gray-200 rounded-md shadow-xl z-20"
-                                x-show="isOpen" x-transition>
-                                {% if is_admin %}
-                                <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
-                                    onclick="openAnonPopup(); isOpen = false">Create Anonymous Submission Link</a>
-                                <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
-                                    onclick="openInvitePopup(); isOpen = false">Invite Members</a>
-                                <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="{% url 'communities:edit_community_redirect' community.id %}"
-                                    onclick="isOpen = false">Edit Community</a>
-                                {% endif %}
-                                 <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
-                                    onclick="openLeavePopup(); isOpen=false">Leave Community</a>
-                            </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-100">Community Information</h2>
+                    <!-- Dropdown Trigger Button -->
+                    <div class="dropdown inline-block relative">
+                        <button
+                            class="bg-indigo-400 text-white p-2 rounded hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
+                            More Actions
+                            <svg class="w-4 h-4 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div class="absolute right-0 mt-2 py-2 w-48 bg-gray-200 rounded-md shadow-xl z-20"
+                            x-show="isOpen" x-transition>
+                            {% if is_admin %}
+                            <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
+                                onclick="openAnonPopup(); isOpen = false">Create Anonymous Submission Link</a>
+                            <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
+                                onclick="openInvitePopup(); isOpen = false">Invite Members</a>
+                            <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300"
+                                href="{% url 'communities:edit_community_redirect' community.id %}"
+                                onclick="isOpen = false">Edit
+                                Community</a>
+                            {% endif %}
+                            <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300" href="#"
+                                onclick="openLeavePopup(); isOpen=false">Leave Community</a>
                         </div>
                     </div>
                 </div>
-
-
-
-                <div class="bg-gray-600 rounded-lg p-4">
-                    <h5 class="text-lg font-semibold text-gray-100 mb-2">
-                        <strong>Name:</strong> {{ community.name }}
-                    </h5>
-                    <p class="text-gray-300 mb-4">
-                        <strong>Description:</strong> {{ community.description }}
-                    </p>
-                    <div class="text-gray-400 mb-4">
-                        <p>Created at: {{ community.created_at }}</p>
-                        <p>Updated at: {{ community.updated_at }}</p>
+                <div class="bg-gray-600 rounded-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <div
+                            class="w-16 h-16 rounded-full bg-gray-500 flex items-center justify-center text-white text-2xl mr-4">
+                            {{ community.name|first|upper }}
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-semibold text-gray-100">{{ community.name }}</h3>
+                            <p class="text-gray-400">{{ community.description }}</p>
+                        </div>
+                    </div>
+                    <div class="text-gray-400">
+                        <p><span class="font-semibold">Created:</span> {{ community.created_at }}</p>
+                        <p><span class="font-semibold">Updated:</span> {{ community.updated_at }}</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <!-- Anonymous Submission Popup -->
@@ -228,22 +274,27 @@
     </div>
 </div>
 
-<!--leave popup -->
-<div id="leave_popup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
-        <div class="bg-white rounded-lg w-1/2 p-6">
-            <h2 class="text-xl text-center font-semibold mb-4">Are you sure you want to leave this community?</h2>
+<!-- Leave Community Popup -->
+<div id="leavePopup" class="fixed inset-0 bg-gray-400 bg-opacity-10 flex items-center justify-center hidden"
+    style="display: none;">
+    <div
+        class="bg-white rounded-lg max-w-lg w-full mx-auto p-8 space-y-6 shadow-xl transition-transform transform scale-95">
+        <h2 class="text-2xl font-semibold text-gray-800">Are you sure you want to leave this community?</h2>
+        <div class="flex justify-center items-center mt-2 space-x-2">
+            <button onclick="closeLeavePopup()"
+                class="bg-indigo-400 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
+                No, go back
+            </button>
+            <a href="{% url 'communities:leave_community' community.id %}"
+                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
+                Yes, leave community
+            </a>
 
-                <div class="flex justify-center items-center mt-2">
-                    <a href="{% url 'communities:leave_community' community.id %}" class="mr-4 pt-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
-                        Yes, leave community
-                    </a>
-                    <button onclick="closeLeavePopup()" class="mr-4 pt-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                        No, go back
-                    </button>
-                </div>
-
-        </div><
+        </div>
+    </div>
 </div>
+
+
 
 {% endblock %}
 
@@ -253,6 +304,9 @@
         // Access the button that toggles the dropdown
         const toggleButton = document.querySelector( '.dropdown button' );
         const dropdownMenu = document.querySelector( '.dropdown div' );
+
+        // Initially hide the dropdown menu
+        dropdownMenu.style.display = 'none';
 
         // Function to toggle dropdown open/close
         function toggleDropdown() {
@@ -296,12 +350,14 @@
     function closeAnonPopup() {
         document.getElementById( 'anonymousPopup' ).classList.add( 'hidden' );
     }
-    function openLeavePopup(){
-            document.getElementById('leave_popup').classList.remove('hidden')
-        }
-    function closeLeavePopup(){
-            document.getElementById("leave_popup").classList.add('hidden')
+    function openLeavePopup() {
+        document.getElementById( 'leavePopup' ).style.display = 'flex'; // Show the popup by setting display to 'flex'
     }
+
+    function closeLeavePopup() {
+        document.getElementById( 'leavePopup' ).style.display = 'none'; // Hide the popup by setting display to 'none'
+    }
+
 
 
     // Function to copy invite link to clipboard

@@ -27,12 +27,10 @@ def dashboard(request):
         admin_communities = CommunityMember.objects.filter(
             member=request.user, is_admin=True)
         both_empty = False
-        if (not (user_communities) and not (admin_communities)):
+        if user_communities is None and admin_communities is None:
+            print("both empty")
             both_empty = True
-        if False:  # request.user.is_staff:  # Check if the user is an administrator
-            return render(request, 'dashboard/dashboard_admin.html', {'user': request.user, 'user_communities': user_communities})
-        else:
-            return render(request, 'dashboard/dashboard_user.html', {'user': request.user, 'user_communities': user_communities, "admin_communities": admin_communities, 'both_empty': both_empty})
+        return render(request, 'dashboard/dashboard_user.html', {'user': request.user, 'user_communities': user_communities, "admin_communities": admin_communities, 'both_empty': both_empty})
     else:
         # Handle the case when the user is not authenticated, perhaps redirect to login page
         return render(request, 'account/login.html')

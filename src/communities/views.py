@@ -50,6 +50,7 @@ def create_community(request):
 def edit_community_redirect(request, community_id):
     return render(request, 'community/edit_community.html', context={'community_id': community_id})
 
+
 @login_required
 def edit_community(request):
 
@@ -57,7 +58,8 @@ def edit_community(request):
     if not check_user_access(request, 'community', community_id=request.POST.get('community_id'), level='admin'):
         return HttpResponseRedirect(reverse("canary:dashboard"))
 
-    community = get_object_or_404(Community, pk=request.POST.get('community_id'))
+    community = get_object_or_404(
+        Community, pk=request.POST.get('community_id'))
     new_description = request.POST.get('community_description')
     new_name = request.POST.get('community_name')
 
@@ -66,7 +68,8 @@ def edit_community(request):
         messages.error(request, 'Invalid community name. Please try again.')
         return HttpResponseRedirect(reverse("communities:edit_community_redirect", args=[community.id]))
     if re.match(r"^\s*$", new_description) or len(new_description) > 500:
-        messages.error(request, 'Invalid community description. Please try again.')
+        messages.error(
+            request, 'Invalid community description. Please try again.')
         return HttpResponseRedirect(reverse("communities:edit_community_redirect", args=[community.id]))
 
     community.description = new_description
@@ -75,10 +78,12 @@ def edit_community(request):
     community.save()
     return redirect('communities:dashboard', community_id=request.POST.get('community_id'))
 
+
 def leave_community(request, community_id):
     community = get_object_or_404(Community, pk=community_id)
     user_id = request.POST.get('user_id')
-    CommunityMember.objects.filter(community=community, member=request.user).delete()
+    CommunityMember.objects.filter(
+        community=community, member=request.user).delete()
     return redirect('canary:dashboard')
 
 
@@ -101,10 +106,10 @@ def community_dashboard(request, community_id):
         reports = community.reports.all()
         is_admin = True
     else:
-        reports = Report.objects.filter(community=community, author=request.user)
+        reports = Report.objects.filter(
+            community=community, author=request.user)
 
-
-    return render(request, 'community/community_dashboard.html', {'community': community, 'members': members, 'reports': reports, 'is_admin': is_admin})
+    return render(request, 'community/community_dashboard.html', {'community': community, 'members': members, 'reports': reports, 'is_admin': is_admin, 'community_id': community_id})
 
 
 def join_community_by_invite(request, token):
@@ -117,22 +122,27 @@ def join_community_by_invite(request, token):
 
             # Check if the user is already a member of the community
             if CommunityMember.objects.filter(community=invite_link.community, member=request.user).exists():
-                messages.success(request, 'You are already a member of this community.')
+                messages.success(
+                    request, 'You are already a member of this community.')
                 return redirect('communities:dashboard', community_id=invite_link.community.id)
 
             # Add the user to the community
-            CommunityMember.objects.create(community=invite_link.community, member=request.user)
+            CommunityMember.objects.create(
+                community=invite_link.community, member=request.user)
 
             # Update the used count of the invite link
             invite_link.used_count += 1
             invite_link.save()
 
-            return redirect('communities:join_success')  # Redirect to join success page
+            # Redirect to join success page
+            return redirect('communities:join_success')
         else:
             # delete the expired invite link
-            return redirect('communities:join_community_error', error_type='invalid_link')  # Redirect to error page for expired or invalid link
+            # Redirect to error page for expired or invalid link
+            return redirect('communities:join_community_error', error_type='invalid_link')
     except InviteLink.DoesNotExist:
-        return redirect('communities:join_community_error', error_type='invalid_link')  # Redirect to error page if invite link does not exist
+        # Redirect to error page if invite link does not exist
+        return redirect('communities:join_community_error', error_type='invalid_link')
 
 
 def generate_invite_link(request, community_id):
@@ -168,16 +178,19 @@ def generate_invite_link(request, community_id):
         max_uses = 1
 
     # generate a new invite link
-    invite_link = InviteLink(community_id=community_id, expiration_time=expiration_time, max_uses=max_uses, link_type=link_type)
+    invite_link = InviteLink(community_id=community_id,
+                             expiration_time=expiration_time, max_uses=max_uses, link_type=link_type)
     invite_link.save()
 
     # create the actual link
     if link_type == 'join':
         # url pattern: invite/<UUID:token>/
-        link_str = reverse("communities:join_community_by_invite", args=[str(invite_link.token)])
+        link_str = reverse("communities:join_community_by_invite", args=[
+                           str(invite_link.token)])
     elif link_type == 'anon':
         # url pattern: community/<UUID:community_id>/anon_report/
-        link_str = reverse("communities:create_anonymous_report", args=[str(invite_link.token)])
+        link_str = reverse("communities:create_anonymous_report", args=[
+                           str(invite_link.token)])
     else:
         return HttpResponse(json.dumps({'error': 'Invalid link type'}), content_type='application/json', status=400)
 
@@ -188,8 +201,10 @@ def generate_invite_link(request, community_id):
 def join_community_error(request, error_type):
     return render(request, 'community/join_community_error.html', {'error_type': error_type})
 
+
 def join_success(request):
     return render(request, 'community/join_success.html')
+
 
 @login_required
 def community_members(request, community_id):
@@ -204,7 +219,8 @@ def community_members(request, community_id):
     community_member = CommunityMember.objects.filter(community=community)
 
     # get the permission level of the current user
-    user_member = CommunityMember.objects.get(community=community, member=request.user)
+    user_member = CommunityMember.objects.get(
+        community=community, member=request.user)
 
     user_role = 'owner' if user_member.is_owner else 'admin' if user_member.is_admin else 'member'
 
@@ -252,7 +268,8 @@ def save_community(request):
         return HttpResponseRedirect(reverse("communities:create_community"))
     if re.match(r"^\s*$", description) or len(description) > 500:
         print(description)
-        messages.error(request, 'Invalid community description. Please try again.')
+        messages.error(
+            request, 'Invalid community description. Please try again.')
         return HttpResponseRedirect(reverse("communities:create_community"))
 
     # Save the community to the database
@@ -262,7 +279,8 @@ def save_community(request):
     user = get_user_model().objects.get(id=request.user.id)
 
     # create a community member object for the user who created the community
-    admin_member = CommunityMember(community=community, member=user, is_admin=True, is_owner=True)
+    admin_member = CommunityMember(
+        community=community, member=user, is_admin=True, is_owner=True)
 
     admin_member.save()
 
@@ -273,6 +291,7 @@ def save_community(request):
 # views for report management for this community
 def create_report(request, community_id):
     return render(request, 'report/create_report.html', {'community_id': community_id})
+
 
 def create_anonymous_report(request, token):
 
@@ -289,7 +308,8 @@ def create_anonymous_report(request, token):
 
         if request.user.is_authenticated:
             # if the user is logged in, log them out
-            messages.info(request, 'You are already logged in. Please log out to submit an anonymous report.')
+            messages.info(
+                request, 'You are already logged in. Please log out to submit an anonymous report.')
             # TODO once we have a custom logout page, pass the context through so the user can still submit
             return render(request, 'account/logout.html')
 
@@ -327,7 +347,8 @@ def save_report(request, community_id):
     resolution_method = request.POST.get('resolution_method')
 
     # make a new Report model
-    report = Report(title=title, content=content, author=author, resolution_method=resolution_method)
+    report = Report(title=title, content=content, author=author,
+                    resolution_method=resolution_method)
 
     # attach the report to the community
     community = get_object_or_404(Community, pk=community_id)
@@ -341,7 +362,7 @@ def save_report(request, community_id):
 
     # go back to the community dashboard (url pattern: community/<int:community_id>/dashboard/)
     messages.success(request, 'Report submitted!')
-    
+
     # send notif to community admins and owner
     owner = CommunityMember.objects.filter(community=community, is_owner=True)
     admins = CommunityMember.objects.filter(community=community, is_admin=True)
@@ -350,7 +371,8 @@ def save_report(request, community_id):
 
     for recipient in owner_and_admins:
         recipient_id = recipient.member.id
-        new_report_notif(recipient_id=recipient_id, report_id=report.id, community_id=community_id)
+        new_report_notif(recipient_id=recipient_id,
+                         report_id=report.id, community_id=community_id)
 
     return HttpResponseRedirect(reverse("communities:dashboard", args=[community_id,]))
 
@@ -373,15 +395,18 @@ def view_report(request, community_id, report_id):
     is_admin = False
     if request.user.is_authenticated:
         user = get_user_model().objects.get(id=request.user.id)
-        is_admin = user.communitymember_set.filter(community=community, is_admin=True).exists()
+        is_admin = user.communitymember_set.filter(
+            community=community, is_admin=True).exists()
 
         if is_admin and report.status == 'NEW':
             report.status = 'INP'
             report.save()
             if report.author is not None:
-                report_status_notif(recipient_id=report.author.id, report_id=report_id, community_id=community_id)
+                report_status_notif(
+                    recipient_id=report.author.id, report_id=report_id, community_id=community_id)
 
-    return render(request, 'report/view_report.html', {'report': report, 'media': media, 'community': community, 'is_admin': is_admin})
+    return render(request, 'report/view_report.html', {"community_id": community_id, 'report': report, 'media': media, 'community': community, 'is_admin': is_admin})
+
 
 @login_required
 def edit_report(request, community_id, report_id):
@@ -403,17 +428,21 @@ def edit_report(request, community_id, report_id):
         report.notes = notes
 
     report.save()
+    messages.success(request, "Report successfully updated")
 
     # send notif to reporter
     if report.author is not None:
         recipient_id = report.author.id
         if status and old_status != status:
-            report_status_notif(recipient_id=recipient_id, report_id=report_id, community_id=community_id)
+            report_status_notif(recipient_id=recipient_id,
+                                report_id=report_id, community_id=community_id)
         if notes:
-            report_notes_notif(recipient_id=recipient_id, report_id=report_id, community_id=community_id)
+            report_notes_notif(recipient_id=recipient_id,
+                               report_id=report_id, community_id=community_id)
 
     # send the user back to the report view
     return HttpResponseRedirect(reverse("communities:view_report", args=[community_id, report_id]))
+
 
 @login_required
 def delete_report(request, community_id, report_id):
@@ -426,10 +455,10 @@ def delete_report(request, community_id, report_id):
     report = get_object_or_404(Report, pk=report_id)
 
     report.delete()
+    messages.success(request, "Report successfully deleted")
 
     # send the user back to the community dashboard
     return HttpResponseRedirect(reverse("communities:dashboard", args=[community_id,]))
-
 
 
 @login_required
@@ -443,7 +472,8 @@ def change_admin_status(request, community_id, member_id):
     community = get_object_or_404(Community, id=community_id)
     user = get_user_model().objects.get(id=member_id)
     # Retrieve community members for the specified community
-    community_member = get_object_or_404(CommunityMember, community=community, member=user)
+    community_member = get_object_or_404(
+        CommunityMember, community=community, member=user)
 
     # Toggle the is_admin status of the CommunityMember object
     community_member.is_admin = not community_member.is_admin
@@ -453,6 +483,7 @@ def change_admin_status(request, community_id, member_id):
         return HttpResponseRedirect(reverse("canary:dashboard"))
 
     return HttpResponseRedirect(reverse("communities:community_members", args=[community_id,]))
+
 
 @login_required
 def remove_member(request, community_id, member_id):
@@ -465,7 +496,8 @@ def remove_member(request, community_id, member_id):
     community = get_object_or_404(Community, id=community_id)
     user = get_user_model().objects.get(id=member_id)
     # Retrieve community members for the specified community
-    community_member = get_object_or_404(CommunityMember, community=community, member=user)
+    community_member = get_object_or_404(
+        CommunityMember, community=community, member=user)
 
     # Delete the CommunityMember object
     community_member.delete()

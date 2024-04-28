@@ -1,22 +1,61 @@
 {% extends "base.html" %}
-
+{% block breadcrumb %}
+<nav class="flex py-3 px-5 text-gray-700 bg-gray-600 shadow-lg" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <li class="inline-flex items-center">
+            <a href="{% url 'canary:home' %}"
+                class="inline-flex items-center text-sm font-medium text-white hover:text-gray-200">
+                <svg aria-hidden="true" class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z">
+                    </path>
+                </svg>
+                Home
+            </a>
+        </li>
+        <li>
+            <div class="flex items-center">
+                <svg aria-hidden="true" class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clip-rule="evenodd"></path>
+                </svg>
+                <a href="{% url 'canary:dashboard' %}"
+                    class="ml-1 text-sm font-medium text-white hover:text-gray-200 md:ml-2">User Dashboard</a>
+            </div>
+        </li>
+        <li>
+            <div class="flex items-center">
+                <svg aria-hidden="true" class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clip-rule="evenodd"></path>
+                </svg>
+                <a href="{% url 'communities:dashboard' community_id %}"
+                    class="ml-1 text-sm font-medium text-indigo-400 hover:text-gray-200 md:ml-2">Community Dashboard</a>
+            </div>
+        </li>
+    </ol>
+</nav>
+{% endblock breadcrumb %}
 {% block content %}
-<div class="bg-gray-900 mt-4 flex items-center justify-center" xmlns="http://www.w3.org/1999/html">
-    <div class="w-full max-w-5xl bg-gray-800 shadow-md rounded-lg overflow-hidden p-6">
+<div class="bg-gray-900 mt-4 flex items-center justify-center overflow-scroll" xmlns="http://www.w3.org/1999/html">
+    <div class="w-full max-w-5xl bg-gray-800 shadow-md rounded-lg overflow-scroll p-6">
         <div class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-100">Community Members</h1>
+            <h1 class="text-3xl font-bold m-2 text-gray-100">Community Members</h1>
         </div>
         <div class="bg-gray-700 rounded-lg">
             <ul class="divide-y divide-gray-600">
                 {% for member in community_member %}
                 <li
                     class="py-3 px-4 flex justify-between items-center {% if member.member.email == user.email %}bg-gray-600{% endif %}">
-                    <div class="flex items-center">
+                    <div class="flex gap-2 justify-center items-center">
                         <div class="text-gray-300 hover:text-white transition-colors">
                             {{ member.member.username }}
                         </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
                         {% if member.is_owner %}
                         <span class="bg-red-500 text-white text-xs font-semibold px-2.5 py-0.5 rounded">Owner</span>
                         {% elif member.is_admin %}
@@ -24,46 +63,49 @@
                         {% else %}
                         <span class="bg-gray-500 text-white text-xs font-semibold px-2.5 py-0.5 rounded">Member</span>
                         {% endif %}
-                        {% if can_remove and not member.is_admin %}
-                        <form method="post" action="{% url 'communities:remove_member' community_id member.member.id %}"
-                            enctype="multipart/form-data" class="inline-block">
-                            {% csrf_token %}
-                            <input type="hidden" name="user_id" value="{{ user.id }}">
-                            <button type="submit"
-                                class="bg-red-600 text-white text-sm py-1 px-4 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-150 ease-in-out">Remove</button>
-                        </form>
-                        {% endif %}
-                        {% if user_role == 'owner' %}
-                        <form method="post"
-                            action="{% url 'communities:change_admin_status' community_id member.member.id %}"
-                            enctype="multipart/form-data" class="inline-block">
-                            {% csrf_token %}
-                            <input type="hidden" name="user_id" value="{{ user.id }}">
-                            {% if member.is_admin %}
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="px-2 py-1">
+                            {% if can_remove and not member.is_admin %}
+                            <form method="post"
+                                action="{% url 'communities:remove_member' community_id member.member.id %}"
+                                enctype="multipart/form-data" class="inline-block">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                <button type="submit"
+                                    class="bg-red-600 text-white text-sm py-1 px-4 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-150 ease-in-out">Remove</button>
+                            </form>
+                            {% endif %}
+                            {% if user_role == 'owner' %}
+                            <form method="post"
+                                action="{% url 'communities:change_admin_status' community_id member.member.id %}"
+                                enctype="multipart/form-data" class="inline-block">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                {% if member.is_admin %}
                                 {% if member.is_owner %}
                                     <a href="{% url 'communities:make_owner' community_id member.member.id %}"
                                         class="bg-blue-500 text-white text-sm py-1 px-4 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150 ease-in-out">Make New Owner </a>
+                                {% else %}<button type="submit"
+                                    class="bg-yellow-500 text-white text-sm py-1 px-4 rounded hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition duration-150 ease-in-out">Demote</button>{% endif %}
                                 {% else %}
-                                    <button type="submit"
-                                        class="bg-yellow-500 text-white text-sm py-1 px-4 rounded hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition duration-150 ease-in-out">Demote</button>
+                                <button type="submit"
+                                    class="bg-green-600 text-white text-sm py-1 px-4 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition duration-150 ease-in-out">Promote</button>
                                 {% endif %}
-                            {% else %}
-                            <button type="submit"
-                                class="bg-gray-300 text-white text-sm py-1 px-4 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition duration-150 ease-in-out">Promote</button>
+                            </form>
                             {% endif %}
-                        </form>
-                        {% endif %}
+                        </div>
                     </div>
                 </li>
 
                 {% empty %}
-                <li class="py-3 px-4 text-gray-300">No members in this community yet.</li>
+                <li class="py-3= px-4 text-gray-300">No members in this community yet.</li>
                 {% endfor %}
             </ul>
         </div>
 
         <a href="{% url 'communities:dashboard' community_id %}"
-            class="bg-blue-500 hover:bg-blue-700 mt-8 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+            class="bg-indigo-400 hover:bg-indigo-600 mt-8 text-white font-bold py-2 px-4 rounded inline-flex items-center">
             Go Back
         </a>
     </div>

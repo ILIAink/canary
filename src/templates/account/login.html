@@ -23,12 +23,14 @@
               {% if field.value %}value="{{ field.value|stringformat:'s' }}"{% endif %}
               {% for attr, value in field.field.widget.attrs.items %} {% if attr != 'placeholder' and attr != 'type' and attr != 'class' %}{{ attr }}="{{ value }}"{% endif %} {% endfor %}>
           </div>
-          {{ field.errors }}
+            <div class="mb-4 text-red-500">
+              <p class="text-xs text-white">{{ field.errors }}</p>
+            </div>
         </div>
         {% endfor %}
         {% if form.non_field_errors %}
-        <div class="mb-4">
-          <p class="text-xs text-red-500">{{ form.non_field_errors }}</p>
+        <div class="mb-4 text-red-500">
+          <p class="text-xs text-white">{{ form.non_field_errors }}</p>
         </div>
         {% endif %}
         <div class="flex items-center justify-between">
@@ -45,6 +47,7 @@
         </div>
         <input type="hidden" name="next" value="{{ request.GET.next }}" />
       </form>
+      
       <p class="mt-4 text-center text-gray-300">
         {% blocktrans %}Need an account? <a href="{{ signup_url }}" class="text-indigo-500 hover:text-indigo-400">Sign up!</a>{% endblocktrans %}
       </p>
