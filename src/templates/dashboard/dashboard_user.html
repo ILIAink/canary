@@ -53,12 +53,7 @@
                             </button>
                         </form>
                     </div>
-                    To make it easier for people to click on communities by clicking the box instead of just the
-                    specific link, we can
-                    modify the HTML code by making the entire div element clickable and wrapping the link inside it.
-                    Here's the updated
-                    code:
-                    htmlCopy code{% if admin_communities %}
+                    {% if admin_communities %}
                     <div class="bg-gray-700 rounded-lg p-4 mb-4">
                         <h3 class="text-xl font-semibold mb-2 text-white">Admin Communities</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
