@@ -8,6 +8,11 @@ from .models import *
 #from accounts.models import User
 from .views import *
 from django.contrib.messages.storage.fallback import FallbackStorage
+from django.shortcuts import get_object_or_404
+from django.http import Http404
+from unittest.mock import PropertyMock
+from unittest.mock import patch
+from django.contrib.auth.models import AnonymousUser, User
 
 
 class CommunityTests(TestCase):
@@ -81,3 +86,162 @@ class CommunityTests(TestCase):
     self.assertEqual(report.content, 'this is a report')
     # check that community acknowledges report
     self.assertIn(report, test_community.reports.all())
+
+
+
+  def test_invalid_save_community_too_long(self):
+    request = HttpRequest()
+    request.method = "GET"
+    request.POST = {'name': 'test', 'description': "Lets mess some stuff up" * 30}
+
+
+    userModel = apps.get_model('accounts', 'User')
+    testUser = userModel.objects.create_user(email="test_user@gmail.com", username='testuser')
+    request.user = testUser
+
+    setattr(request, 'session', 'session')
+    messages = FallbackStorage(request)
+    setattr(request, '_messages', messages)
+    # view being tested
+    save_community(request)
+
+    with self.assertRaises(Http404):
+      get_object_or_404(Community, name="test")
+
+    with self.assertRaises(Http404):
+      get_object_or_404(CommunityMember, member=testUser)
+
+  def test_invalid_save_community_name_is_space(self):
+
+    request = HttpRequest()
+    request.method = "GET"
+    request.POST = {'name': ' ', 'description': "Lets mess some stuff up"}
+
+    userModel = apps.get_model('accounts', 'User')
+    testUser = userModel.objects.create_user(email="test_user@gmail.com", username='testuser')
+    request.user = testUser
+
+    setattr(request, 'session', 'session')
+    messages = FallbackStorage(request)
+    setattr(request, '_messages', messages)
+
+    save_community(request)
+
+    with self.assertRaises(Http404):
+      get_object_or_404(Community, name="test")
+
+    with self.assertRaises(Http404):
+      get_object_or_404(CommunityMember, member=testUser)
+
+
+  #not authenticated case
+  def test_user_access_anon_user(self):
+    request = HttpRequest()
+    request.user = AnonymousUser()
+    result = check_user_access(request, "community", level='member')
+    self.assertFalse(result)
+
+
+  def test_user_access_normal_member(self):
+    userModel = apps.get_model('accounts', 'User')
+    testUser = userModel.objects.create_user(email="test_user@gmail.com", username='testuser')
+    testCommunity = Community(name="testCommunity", description="for testing")
+    testUser.save()
+    testCommunity.save()
+
+    request = HttpRequest()
+    request.user = testUser
+
+    member = CommunityMember(community=testCommunity, member=testUser, is_admin=False)
+    member.save()
+    result = check_user_access(request, "community", level='member', community_id=testCommunity.id)
+    self.assertTrue(result)
+
+  def test_user_access_not_member(self):
+    userModel = apps.get_model('accounts', 'User')
+    testUser = userModel.objects.create_user(email="test_user@gmail.com", username='testuser')
+    testCommunity = Community(name="testCommunity", description="for testing")
+    testUser.save()
+    testCommunity.save()
+
+    request = HttpRequest()
+    request.user = testUser
+
+    #member = CommunityMember(community=testCommunity, member=testUser, is_admin=False)
+    #member.save()
+    result = check_user_access(request, "community", level='member', community_id=testCommunity.id)
+    self.assertFalse(result)
+
+
+  def test_user_access_own_report(self):
+    userModel = apps.get_model('accounts', 'User')
+    testUser = userModel.objects.create_user(email="test_user@gmail.com", username='testuser')
+    testCommunity = Community(name="testCommunity", description="for testing")
+    testUser.save()
+    testCommunity.save()
+
+    member = CommunityMember(community=testCommunity, member=testUser, is_admin=False)
+    member.save()
+
+    request = HttpRequest()
+    request.user = testUser
+
+    test_report = Report(title='test_report', content='I snitched', author=testUser)
+    test_report.save()
+    result = check_user_access(request, "report", level='member', community_id=testCommunity.id, report_id=test_report.id)
+    self.assertTrue(result)
+
+  def test_user_access_admin(self):
+    userModel = apps.get_model('accounts', 'User')
+    testUser = userModel.objects.create_user(email="test_user@gmail.com", username='testuser')
+    testCommunity = Community(name="testCommunity", description="for testing")
+    testUser.save()
+    testCommunity.save()
+
+    member = CommunityMember(community=testCommunity, member=testUser, is_admin=False)
+    member.save()
+
+    request = HttpRequest()
+    request.user = testUser
+    result = check_user_access(request, "community", level='admin', community_id=testCommunity.id)
+    self.assertFalse(result)
+
+  def test_leave_community_member(self):
+    userModel = apps.get_model('accounts', 'User')
+    testUser = userModel.objects.create_user(email="test_user@gmail.com", username='testuser')
+    testCommunity = Community(name="testCommunity", description="for testing")
+    testUser.save()
+    testCommunity.save()
+
+    member = CommunityMember(community=testCommunity, member=testUser, is_admin=False)
+    member.save()
+
+    request = HttpRequest()
+    request.user = testUser
+
+    leave_community(request=request, community_id=testCommunity.id)
+    
+    user_in_community = CommunityMember.objects.filter(community=testCommunity, member=testUser).exists()
+    
+    self.assertFalse(user_in_community)
+
+  def test_delete_report(self):
+    userModel = apps.get_model('accounts', 'User')
+    testUser = userModel.objects.create_user(email="test_user@gmail.com", username='testuser')
+    testCommunity = Community(name="testCommunity", description="for testing")
+    testUser.save()
+    testCommunity.save()
+
+    member = CommunityMember(community=testCommunity, member=testUser, is_admin=True)
+    member.save()
+
+    testReport = Report(title="test_report", content="test_content", author=testUser)
+    testReport.save()
+
+    httpRequest = HttpRequest()
+    setattr(httpRequest, 'user', testUser)
+
+    delete_report(httpRequest, testCommunity.id, testReport.id)
+
+    result = Report.objects.filter(title="test_report", content='test_content', author=testUser).exists()
+    self.assertFalse(result)
