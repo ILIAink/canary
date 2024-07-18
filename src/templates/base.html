@@ -18,6 +18,25 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.0"></script>
+    <style>
+        /* Hide scrollbar for all browsers */
+
+        /* Firefox */
+        body {
+            scrollbar-width: none;
+        }
+
+        /* Webkit (Chrome, Safari) */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* IE and Edge */
+        body {
+            -ms-overflow-style: none;
+            /* Hides the scrollbar in IE 10+ */
+        }
+    </style>
 </head>
 
 <body class="flex flex-col min-h-screen bg-gray-900 text-color">
