@@ -151,11 +151,7 @@ if IS_HEROKU_APP:
     # https://devcenter.heroku.com/articles/provisioning-heroku-postgres
     # https://github.com/jazzband/dj-database-url
     DATABASES = {
-        "default": dj_database_url.config(
-            conn_max_age=600,
-            conn_health_checks=True,
-            ssl_require=True,
-        ),
+        "default": dj_database_url.parse(os.environ.get("DATABASE_URL"))
     }
 else:
     # When running locally in development or in CI, a sqlite database file will be used instead
@@ -220,8 +216,8 @@ if USE_S3:
         BASE_DIR / "static",
     ]
     STATIC_ROOT = BASE_DIR.parent / "static"
-    #STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
-    #STATICFILES_STORAGE = 'djangoProject.storage_backends.StaticStorage'
+    # STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
+    # STATICFILES_STORAGE = 'djangoProject.storage_backends.StaticStorage'
     # s3 public media settings
     PUBLIC_MEDIA_LOCATION = 'media'
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
